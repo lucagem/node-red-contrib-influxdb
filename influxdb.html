@@ -186,62 +186,137 @@
         <label for="node-input-influxdb"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.server"></span></label>
         <input type="text" id="node-input-influxdb">
     </div>
-    <div class="form-row" id="node-input-row-org">
-        <label for="node-input-org"><i class="fa fa-sitemap"></i> <span data-i18n="influxdb.label.org"></span></label>
-        <input type="text" id="node-input-org">
-    </div>
-    <div class="form-row" id="node-input-row-bucket">
-        <label for="node-input-bucket"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.bucket"></span></label>
-        <input type="text" id="node-input-bucket">
-    </div>
-    <div class="form-row" id="node-input-row-database">
-        <label for="node-input-database"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.database"></span></label>
-        <input type="text" id="node-input-database">
-    </div>
+    
+    <!-- Tabs -->
     <div class="form-row">
-        <label for="node-input-measurement"><i style="width: 10px;" class="fa fa-rss"></i> <span data-i18n="influxdb.label.measurement"></span></label>
-        <input type="text" id="node-input-measurement">
+        <ul id="node-input-tabs" style="min-width: 600px; margin-bottom: 20px;">
+            <li><a href="#node-input-tab-config" data-i18n="influxdb.tabs.config">Configuration</a></li>
+            <li><a href="#node-input-tab-dynamic" data-i18n="influxdb.tabs.dynamic">Dynamic Properties</a></li>
+        </ul>
     </div>
-    <div class="form-row" id="node-input-row-enableAdvancedOptions">
-        <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="advanced-options-checkbox" style="width: 70%;"><span data-i18n="influxdb.label.use-advanced-query"></span></label>
-        <div id="advanced-options-div" class="hide" style="margin-left: 20px; margin-top: 10px;">
-            <div class="form-row">
-                <label for="node-input-precision" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
-                <select type="text" id="node-input-precision" style="width:55%">
-                    <option value="">Default</option> 
-                    <option value="n">Nanoseconds (n)</option> 
-                    <option value="u">Microseconds (u)</option> 
-                    <option value="ms">Milliseconds (ms)</option> 
-                    <option value="s">Seconds (s)</option>
-                    <option value="m">Minute (m)</option>
-                    <option value="h">Hour (h)</option>
-                    <option value="d">Day (d)</option>
-                    <option value="w">Week (w)</option>
-                </select>  
+    
+    <!-- Tab 1: Configuration (contenuto esistente) -->
+    <div id="node-input-tab-config">
+        <div class="form-row" id="node-input-row-org">
+            <label for="node-input-org"><i class="fa fa-user"></i> <span data-i18n="influxdb.label.org"></span></label>
+            <input type="text" id="node-input-org">
+        </div>
+        <div class="form-row" id="node-input-row-bucket">
+            <label for="node-input-bucket"><i class="fa fa-archive"></i> <span data-i18n="influxdb.label.bucket"></span></label>
+            <input type="text" id="node-input-bucket">
+        </div>
+        <div class="form-row" id="node-input-row-database">
+            <label for="node-input-database"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.database"></span></label>
+            <input type="text" id="node-input-database">
+        </div>
+        <div class="form-row">
+            <label for="node-input-measurement"><i class="fa fa-table"></i> <span data-i18n="influxdb.label.measurement"></span></label>
+            <input type="text" id="node-input-measurement">
+        </div>
+        <div class="form-row" id="node-warning-measurement" style="display: none;">
+            <div class="form-tips"><span data-i18n="influxdb.warn.measurement"></span></div>
+        </div>
+        <div class="form-row" id="node-input-row-enableAdvancedOptions">
+            <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
+            <label for="advanced-options-checkbox" style="width: 70%;"><span data-i18n="influxdb.label.advancedQueryOptions"></span></label>
+        </div>
+        <div id="advanced-options-div">
+            <div class="form-row" id="node-input-row-precision">
+                <label for="node-input-precision"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.precision"></span></label>
+                <select id="node-input-precision">
+                    <option value="" data-i18n="influxdb.precision.default"></option>
+                    <option value="h" data-i18n="influxdb.precision.hours"></option>
+                    <option value="m" data-i18n="influxdb.precision.minutes"></option>
+                    <option value="s" data-i18n="influxdb.precision.seconds"></option>
+                    <option value="ms" data-i18n="influxdb.precision.milliseconds"></option>
+                    <option value="u" data-i18n="influxdb.precision.microseconds"></option>
+                    <option value="ns" data-i18n="influxdb.precision.nanoseconds"></option>
+                </select>
             </div>
-            <div class="form-row">
-                <label for="node-input-retentionPolicy" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
-                <input type="text" style="width:55%" id="node-input-retentionPolicy">
+            <div class="form-row" id="node-input-row-retentionPolicy">
+                <label for="node-input-retentionPolicy"><i class="fa fa-history"></i> <span data-i18n="influxdb.label.retentionPolicy"></span></label>
+                <input type="text" id="node-input-retentionPolicy">
             </div>
-        </div>  
+        </div>
+        <div class="form-row" id="node-input-row-precisionV18FluxV20">
+            <label for="node-input-precisionV18FluxV20"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.precision"></span></label>
+            <select id="node-input-precisionV18FluxV20">
+                <option value="" data-i18n="influxdb.precision.default"></option>
+                <option value="h" data-i18n="influxdb.precision.hours"></option>
+                <option value="m" data-i18n="influxdb.precision.minutes"></option>
+                <option value="s" data-i18n="influxdb.precision.seconds"></option>
+                <option value="ms" data-i18n="influxdb.precision.milliseconds"></option>
+                <option value="us" data-i18n="influxdb.precision.microseconds"></option>
+                <option value="ns" data-i18n="influxdb.precision.nanoseconds"></option>
+            </select>
+        </div>
+        <div class="form-row" id="node-input-row-retentionPolicyV18Flux">
+            <label for="node-input-retentionPolicyV18Flux"><i class="fa fa-history"></i> <span data-i18n="influxdb.label.retentionPolicy"></span></label>
+            <input type="text" id="node-input-retentionPolicyV18Flux">
+        </div>
+        <div class="form-row" id="node-warning-retention-policy" style="display: none;">
+            <div class="form-tips"><span data-i18n="influxdb.warn.retentionPolicy"></span></div>
+        </div>
     </div>
-    <div class="form-row" id="node-input-row-precisionV18FluxV20">
-        <label for="node-input-precisionV18FluxV20" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
-        <select type="text" id="node-input-precisionV18FluxV20" style="width:55%">
-            <option value="ns">Nanoseconds (ns)</option> 
-            <option value="us">Microseconds (us)</option> 
-            <option value="ms">Milliseconds (ms)</option> 
-            <option value="s">Seconds (s)</option>
-        </select>  
+    
+    <!-- Tab 2: Dynamic Properties -->
+    <div id="node-input-tab-dynamic">
+        <div class="form-row">
+            <label for="node-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
+            <input type="text" id="node-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
+            <div class="form-tips">Leave empty for normal connection. Use 'false' or '0' to disable connection (no errors).</div>
+        </div>
+        
+        <hr style="margin: 20px 0;">
+        
+        <div class="form-row">
+            <label for="node-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDB Version</label>
+            <input type="text" id="node-input-dynamicVersion" placeholder="1 | 1.8 | 2 | ${IDB_VERSION}">
+            <div class="form-tips">Accepted values: 1, 1.8, 2. Overrides the configuration tab version if set.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicUrl"><i class="fa fa-server"></i> URL</label>
+            <input type="text" id="node-input-dynamicUrl" placeholder="http://localhost:8086 | ${IDB_URL}">
+            <div class="form-tips">Full URL for InfluxDB server.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicDatabase"><i class="fa fa-database"></i> Database</label>
+            <input type="text" id="node-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE}">
+            <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicOrg"><i class="fa fa-user"></i> Organization</label>
+            <input type="text" id="node-input-dynamicOrg" placeholder="my-org | ${IDB_ORG}">
+            <div class="form-tips">For InfluxDB 2.0.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicBucket"><i class="fa fa-archive"></i> Bucket</label>
+            <input type="text" id="node-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET}">
+            <div class="form-tips">For InfluxDB 2.0.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicUsername"><i class="fa fa-user"></i> Username</label>
+            <input type="text" id="node-input-dynamicUsername" placeholder="admin | ${IDB_USERNAME}">
+            <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicPassword"><i class="fa fa-lock"></i> Password</label>
+            <input type="text" id="node-input-dynamicPassword" placeholder="password | ${IDB_PASSWORD}">
+            <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-dynamicToken"><i class="fa fa-key"></i> Token</label>
+            <input type="text" id="node-input-dynamicToken" placeholder="my-token | ${IDB_TOKEN}">
+            <div class="form-tips">For InfluxDB 1.8-flux and 2.0.</div>
+        </div>
     </div>
-    <div class="form-row" id="node-input-row-retentionPolicyV18Flux">
-        <label for="node-input-retentionPolicyV18Flux" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
-        <input type="text" id="node-input-retentionPolicyV18Flux" style="width:55%">
-    </div>
-
-    <div class="form-tips" id="node-warning-measurement"><span data-i18n="[html]influxdb.tip.measurement"></span></div>
-    <div class="form-tips" id="node-warning-retention-policy"><span data-i18n="[html]influxdb.tip.retention-policy"></span></div>
 </script>
 
 <script type="text/html" data-help-name="influxdb out">
