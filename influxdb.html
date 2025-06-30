@@ -181,7 +181,13 @@
             }
         },
         oneditprepare: function () {
-            // Inizializza i tab
+            // Inizializza i tab usando il sistema di Node-RED
+            $("#node-config-tabs").editableList({
+                addButton: false,
+                removable: false
+            });
+
+            // Oppure prova questo approccio più semplice:
             $("#node-config-tabs").tabs();
 
             function updateTLSOptions() {
