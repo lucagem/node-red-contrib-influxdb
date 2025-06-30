@@ -1,16 +1,27 @@
-<script type="text/html" data-template-name="influxdb">    
-    <div class="form-row" style="min-width: 500px;"</div>
+<script type="text/html" data-template-name="influxdb">
+    <div class="form-row" style="min-width: 500px;">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-influxdbVersion"><i class="fa fa-code-fork"></i> <span data-i18n="influxdb.label.version"></span></label>
-        <select type="text" style="width: 100px" id="node-config-input-influxdbVersion">
-            <option value="1.x">1.x</option> 
-            <option value="1.8-flux">1.8-flux</option> 
-            <option value="2.0">2.0</option> 
-        </select>
+    
+    <!-- Tabs -->
+    <div class="form-row node-input-tabs-row">
+        <ul id="node-config-tabs">
+            <li><a href="#node-config-tab-config">Configuration</a></li>
+            <li><a href="#node-config-tab-dynamic">Dynamic Properties</a></li>
+        </ul>
     </div>
+    
+    <!-- Tab 1: Configuration (contenuto esistente) -->
+    <div id="node-config-tab-config">
+        <div class="form-row">
+            <label for="node-config-input-influxdbVersion"><i class="fa fa-code-fork"></i> <span data-i18n="influxdb.label.version"></span></label>
+            <select type="text" style="width: 100px" id="node-config-input-influxdbVersion">
+                <option value="1.x">1.x</option> 
+                <option value="1.8-flux">1.8-flux</option> 
+                <option value="2.0">2.0</option> 
+            </select>
+        </div>
     <div class="form-row" id="node-config-row-hostname-port">
         <label for="node-config-input-hostname"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.host"></span></label>
         <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost" style="width: 40%;" >
@@ -53,7 +64,68 @@
             <input style="width: 300px;" type="text" id="node-config-input-tls">
         </div>
     </div>
+        
+    </div>
+    
+    <!-- Tab 2: Dynamic Properties -->
+    <div id="node-config-tab-dynamic">
+    <div class="form-row">
+        <label for="node-config-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
+        <input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
+        <div class="form-tips">Leave empty for normal connection. Use 'false' or '0' to disable connection (no errors).
+        </div>
+    </div>
 
+    <hr style="margin: 20px 0;">
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDB Version</label>
+        <input type="text" id="node-config-input-dynamicVersion" placeholder="1 | 1.8 | 2 | ${IDB_VERSION}">
+        <div class="form-tips">Accepted values: 1, 1.8, 2. Overrides the configuration tab version if set.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicUrl"><i class="fa fa-server"></i> URL</label>
+        <input type="text" id="node-config-input-dynamicUrl" placeholder="http://localhost:8086 | ${IDB_URL}">
+        <div class="form-tips">Full URL for InfluxDB server.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicDatabase"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-config-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE}">
+        <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicOrg"><i class="fa fa-user"></i> Organization</label>
+        <input type="text" id="node-config-input-dynamicOrg" placeholder="my-org | ${IDB_ORG}">
+        <div class="form-tips">For InfluxDB 2.0.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicBucket"><i class="fa fa-archive"></i> Bucket</label>
+        <input type="text" id="node-config-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET}">
+        <div class="form-tips">For InfluxDB 2.0.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicUsername"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-config-input-dynamicUsername" placeholder="admin | ${IDB_USERNAME}">
+        <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicPassword"><i class="fa fa-lock"></i> Password</label>
+        <input type="text" id="node-config-input-dynamicPassword" placeholder="password | ${IDB_PASSWORD}">
+        <div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-dynamicToken"><i class="fa fa-key"></i> Token</label>
+        <input type="text" id="node-config-input-dynamicToken" placeholder="my-token | ${IDB_TOKEN}">
+        <div class="form-tips">For InfluxDB 1.8-flux and 2.0.</div>
+    </div>
+</div>
 </script>
 
 <script type="text/javascript">
@@ -64,11 +136,12 @@
         category: 'config',
         color: "rgb(218, 196, 180)",
         defaults: {
-            hostname: {value: "127.0.0.1", required: true},
-            port: {value: 8086, required: true},            
-			protocol: {value: "http", required: true},
-            database: {value: "database",
-                validate:function(db) {
+            hostname: { value: "127.0.0.1", required: true },
+            port: { value: 8086, required: true },
+            protocol: { value: "http", required: true },
+            database: {
+                value: "database",
+                validate: function (db) {
                     let version = getVersion();
                     if (!version || version === '1.x') {
                         return db.length > 0;
@@ -76,12 +149,13 @@
                     return true;
                 }
             },
-            name: {value: ""},
-            usetls: {value: false},
-            tls: {type:"tls-config",required: false},
-            influxdbVersion: {value: "1.x", required: false},
-            url: {value: "http://localhost:8086",
-                validate:function(url) {
+            name: { value: "" },
+            usetls: { value: false },
+            tls: { type: "tls-config", required: false },
+            influxdbVersion: { value: "1.x", required: false },
+            url: {
+                value: "http://localhost:8086",
+                validate: function (url) {
                     let version = getVersion();
                     if (version === '1.8-flux' || version === '2.0') {
                         return url.length > 0;
@@ -89,17 +163,17 @@
                     return true;
                 }
             },
-            timeout: {value:10, required: false},
-            rejectUnauthorized: {value: true}
+            timeout: { value: 10, required: false },
+            rejectUnauthorized: { value: true }
         },
         credentials: {
-            username: {type: "text"},
+            username: { type: "text" },
             password: { type: "password" },
-            token: {type: "password"}
+            token: { type: "password" }
         },
         label: function () {
             this.influxdbVersion = this.influxdbVersion || '1.x';   // for compatibility
-            var version = "[v"+this.influxdbVersion+"] ";
+            var version = "[v" + this.influxdbVersion + "] ";
             if (this.influxdbVersion === '1.8-flux' || this.influxdbVersion === '2.0') {
                 return this.name ? version + this.name : version + this.url;
             } else {
@@ -107,6 +181,9 @@
             }
         },
         oneditprepare: function () {
+            // Inizializza i tab
+            $("#node-config-tabs").tabs();
+
             function updateTLSOptions() {
                 if ($("#node-config-input-usetls").is(':checked')) {
                     $("#node-config-row-tls").show();
@@ -115,7 +192,7 @@
                 }
             }
 
-            function update18Options() {                
+            function update18Options() {
                 $("#node-config-row-hostname-port").show();
                 $("#node-config-row-url").hide();
                 $("#node-config-row-database").show();
@@ -123,11 +200,11 @@
                 $("#node-config-row-password").show();
                 $("#node-config-row-token").hide();
                 $("#node-config-row-timeout").hide();
-                $("#node-config-row-rejectUnauthorized").hide();   
-                $("#node-config-row-enableSecureConnection").show();                
+                $("#node-config-row-rejectUnauthorized").hide();
+                $("#node-config-row-enableSecureConnection").show();
             }
 
-            function update18FluxOptions() {                
+            function update18FluxOptions() {
                 $("#node-config-row-hostname-port").hide();
                 $("#node-config-row-url").show();
                 $("#node-config-row-database").hide();
@@ -135,11 +212,11 @@
                 $("#node-config-row-password").show();
                 $("#node-config-row-token").hide();
                 $("#node-config-row-timeout").show();
-                $("#node-config-row-rejectUnauthorized").show();   
-                $("#node-config-row-enableSecureConnection").hide();   
+                $("#node-config-row-rejectUnauthorized").show();
+                $("#node-config-row-enableSecureConnection").hide();
             }
 
-            function update20Options() {                
+            function update20Options() {
                 $("#node-config-row-hostname-port").hide();
                 $("#node-config-row-url").show();
                 $("#node-config-row-database").hide();
@@ -147,8 +224,8 @@
                 $("#node-config-row-password").hide();
                 $("#node-config-row-token").show();
                 $("#node-config-row-timeout").show();
-                $("#node-config-row-rejectUnauthorized").show();   
-                $("#node-config-row-enableSecureConnection").hide();  
+                $("#node-config-row-rejectUnauthorized").show();
+                $("#node-config-row-enableSecureConnection").hide();
             }
 
             $("#node-config-input-influxdbVersion").change(function () {
@@ -167,7 +244,7 @@
                         $("#node-config-input-usetls").on("click", function () {
                             updateTLSOptions();
                         });
-                }   
+                }
             });
             // if version not set assume 1.x to support older flows
             let selected = $("#node-config-input-influxdbVersion option:selected").val();
@@ -280,31 +357,34 @@
         category: 'storage-output',
         color: "rgb(218, 196, 180)",
         defaults: {
-            influxdb: {type: "influxdb", required: true},
-            name: {value: ""},
-            measurement: {value: ""},
-            precision: {value: ""},
-            retentionPolicy: {value: ""},
-            database: {value: "database",
-                validate:function(db) {
+            influxdb: { type: "influxdb", required: true },
+            name: { value: "" },
+            measurement: { value: "" },
+            precision: { value: "" },
+            retentionPolicy: { value: "" },
+            database: {
+                value: "database",
+                validate: function (db) {
                     if (selectedVersion() === 'v1.8-flux') {
                         return db.length > 0;
                     }
                     return true;
                 }
             },
-            precisionV18FluxV20: {value: "ms"},
-            retentionPolicyV18Flux: {value: ""},
-            org: {value: "organisation",
-                validate:function(org) {
+            precisionV18FluxV20: { value: "ms" },
+            retentionPolicyV18Flux: { value: "" },
+            org: {
+                value: "organisation",
+                validate: function (org) {
                     if (selectedVersion() === 'v2.0') {
                         return org.length > 0;
                     }
                     return true;
                 }
             },
-            bucket: {value: "bucket",
-                validate:function(bucket) {
+            bucket: {
+                value: "bucket",
+                validate: function (bucket) {
                     let version = selectedVersion()
                     if (version === 'v2.0') {
                         return bucket.length > 0;
@@ -317,15 +397,15 @@
         outputs: 0,
         icon: "influxdb.png",
         align: "right",
-        label: function() {
+        label: function () {
             var influxNode = RED.nodes.node(this.influxdb);
             return this.name || (influxNode ? influxNode.label() + " " + this.measurement : "influxdb");
         },
-        labelStyle: function() {
+        labelStyle: function () {
             return this.name ? "node_label_italic" : "";
         },
-        oneditprepare: function() {
-            $("#advanced-options-checkbox").change( function () {
+        oneditprepare: function () {
+            $("#advanced-options-checkbox").change(function () {
                 if ($('#advanced-options-checkbox').is(":checked")) {
                     $("#advanced-options-div").show();
                 } else {
@@ -335,14 +415,14 @@
 
             // show advanced options if a query option is set on startup
             if (($('#node-input-precision').val() === "")
-                    && ($('#node-input-retentionPolicy').val() === "")) {
+                && ($('#node-input-retentionPolicy').val() === "")) {
                 $("#advanced-options-div").hide();
             } else {
                 $('#advanced-options-checkbox').prop('checked', true);
                 $("#advanced-options-div").show();
             }
 
-            function update18Options() {                
+            function update18Options() {
                 $("#node-input-row-org").hide();
                 $("#node-input-row-bucket").hide();
                 $("#node-input-row-database").hide();
@@ -352,9 +432,9 @@
                 $("#node-warning-retention-policy").show();
             }
 
-            function update18FluxOptions() {       
+            function update18FluxOptions() {
                 $("#node-input-row-org").hide();
-                $("#node-input-row-bucket").hide();         
+                $("#node-input-row-bucket").hide();
                 $("#node-input-row-database").show();
                 $("#node-input-row-enableAdvancedOptions").hide();
                 $("#node-input-row-precisionV18FluxV20").show();
@@ -364,7 +444,7 @@
 
             function update20Options() {
                 $("#node-input-row-org").show();
-                $("#node-input-row-bucket").show();           
+                $("#node-input-row-bucket").show();
                 $("#node-input-row-database").hide();
                 $("#node-input-row-enableAdvancedOptions").hide();
                 $("#node-input-row-precisionV18FluxV20").show();
@@ -375,10 +455,10 @@
             $("#node-input-influxdb").change(function () {
                 switch (selectedVersion()) {
                     case 'v1.8-flux':
-                        update18FluxOptions();                    
+                        update18FluxOptions();
                         break;
                     case 'v2.0':
-                        update20Options();                    
+                        update20Options();
                         break;
                     default:
                         update18Options();
@@ -386,14 +466,14 @@
             });
 
             $("#node-input-measurement").change(function () {
-                if($("#node-input-measurement").val() === "") {
+                if ($("#node-input-measurement").val() === "") {
                     $("#node-warning-measurement").show();
                 } else {
                     $("#node-warning-measurement").hide();
                 }
             });
         },
-        oneditsave: function() {
+        oneditsave: function () {
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
@@ -482,30 +562,33 @@
         color: "rgb(218, 196, 180)",
         paletteLabel: 'influx batch',
         defaults: {
-            influxdb: {type: "influxdb", required: true},
-            precision: {value: ""},
-            retentionPolicy: {value: ""},
-            name: {value: ""},
-            database: {value: "database",
-                validate:function(db) {
+            influxdb: { type: "influxdb", required: true },
+            precision: { value: "" },
+            retentionPolicy: { value: "" },
+            name: { value: "" },
+            database: {
+                value: "database",
+                validate: function (db) {
                     if (selectedVersion() === 'v1.8-flux') {
                         return db.length > 0;
                     }
                     return true;
                 }
             },
-            precisionV18FluxV20: {value: "ms"},
-            retentionPolicyV18Flux: {value: ""},
-            org: {value: "organisation",
-                validate:function(org) {
+            precisionV18FluxV20: { value: "ms" },
+            retentionPolicyV18Flux: { value: "" },
+            org: {
+                value: "organisation",
+                validate: function (org) {
                     if (selectedVersion() === 'v2.0') {
                         return org.length > 0;
                     }
                     return true;
                 }
             },
-            bucket: {value: "bucket",
-                validate:function(bucket) {
+            bucket: {
+                value: "bucket",
+                validate: function (bucket) {
                     let version = selectedVersion()
                     if (version === 'v2.0') {
                         return bucket.length > 0;
@@ -518,15 +601,15 @@
         outputs: 0,
         icon: "influxdb.png",
         align: "right",
-        label: function() {
+        label: function () {
             var influxNode = RED.nodes.node(this.influxdb);
             return this.name || (influxNode ? influxNode.label() : "influxdb batch");
         },
-        labelStyle: function() {
+        labelStyle: function () {
             return this.name ? "node_label_italic" : "";
         },
-        oneditprepare: function() {
-            function update18Options() {                
+        oneditprepare: function () {
+            function update18Options() {
                 $("#node-input-row-org").hide();
                 $("#node-input-row-bucket").hide();
                 $("#node-input-row-database").hide();
@@ -536,9 +619,9 @@
                 $("#node-warning-retention-policy").show();
             }
 
-            function update18FluxOptions() {       
+            function update18FluxOptions() {
                 $("#node-input-row-org").hide();
-                $("#node-input-row-bucket").hide();         
+                $("#node-input-row-bucket").hide();
                 $("#node-input-row-database").show();
                 $("#node-input-row-enableAdvancedOptions").hide();
                 $("#node-input-row-precisionV18FluxV20").show();
@@ -548,7 +631,7 @@
 
             function update20Options() {
                 $("#node-input-row-org").show();
-                $("#node-input-row-bucket").show();           
+                $("#node-input-row-bucket").show();
                 $("#node-input-row-database").hide();
                 $("#node-input-row-enableAdvancedOptions").hide();
                 $("#node-input-row-precisionV18FluxV20").show();
@@ -558,17 +641,17 @@
             $("#node-input-influxdb").change(function () {
                 switch (selectedVersion()) {
                     case 'v1.8-flux':
-                        update18FluxOptions();                    
+                        update18FluxOptions();
                         break;
                     case 'v2.0':
-                        update20Options();                    
+                        update20Options();
                         break;
                     default:
                         update18Options();
                 }
             });
-            
-            $("#advanced-options-checkbox").change( function () {
+
+            $("#advanced-options-checkbox").change(function () {
                 if ($('#advanced-options-checkbox').is(":checked")) {
                     $("#advanced-options-div").show();
                 } else {
@@ -578,14 +661,14 @@
 
             // show advanced options if a query option is set on startup
             if (($('#node-input-precision').val() === "")
-                    && ($('#node-input-retentionPolicy').val() === "")) {
+                && ($('#node-input-retentionPolicy').val() === "")) {
                 $("#advanced-options-div").hide();
             } else {
                 $('#advanced-options-checkbox').prop('checked', true);
                 $("#advanced-options-div").show();
             }
         },
-        oneditsave: function() {
+        oneditsave: function () {
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
@@ -669,14 +752,15 @@
         category: 'storage-input',
         color: "rgb(218, 196, 180)",
         defaults: {
-            influxdb: {type: "influxdb", required: true},
-            name: {value: ""},
-            query: {value: ""},
-            rawOutput: {value: false},
-            precision: {value: ""},
-            retentionPolicy: {value: ""},
-            org: { value: "organisation",
-                validate:function(org) {
+            influxdb: { type: "influxdb", required: true },
+            name: { value: "" },
+            query: { value: "" },
+            rawOutput: { value: false },
+            precision: { value: "" },
+            retentionPolicy: { value: "" },
+            org: {
+                value: "organisation",
+                validate: function (org) {
                     if (selectedVersion() === 'v2.0') {
                         return org.length > 0;
                     }
@@ -687,14 +771,14 @@
         inputs: 1,
         outputs: 1,
         icon: "influxdb.png",
-        label: function() {
+        label: function () {
             var influxNode = RED.nodes.node(this.influxdb);
             return this.name || (influxNode ? influxNode.label() : "influxdb");
         },
-        labelStyle: function() {
+        labelStyle: function () {
             return this.name ? "node_label_italic" : "";
         },
-        oneditprepare: function() {
+        oneditprepare: function () {
             this.editor = RED.editor.createEditor({
                 id: 'node-input-query-editor',
                 mode: 'ace/mode/text',
@@ -703,14 +787,14 @@
             $("#node-input-query").change();
 
             $("#node-input-query").change(function () {
-                if($("#node-input-query").val() === "") {
+                if ($("#node-input-query").val() === "") {
                     $("#node-warning").show();
                 } else {
                     $("#node-warning").hide();
                 }
             });
 
-            $("#advanced-options-checkbox").change( function () {
+            $("#advanced-options-checkbox").change(function () {
                 if ($('#advanced-options-checkbox').is(":checked")) {
                     $("#advanced-options-div").show();
                 } else {
@@ -720,7 +804,7 @@
 
             // show advanced options if a query option is set on startup
             if (($('#node-input-precision').val() === "")
-                    && ($('#node-input-retentionPolicy').val() === "")) {
+                && ($('#node-input-retentionPolicy').val() === "")) {
                 $("#advanced-options-div").hide();
             } else {
                 $('#advanced-options-checkbox').prop('checked', true);
@@ -732,7 +816,7 @@
                 $("#node-input-row-extras").show();
             }
 
-            function update18FluxOptions() {                
+            function update18FluxOptions() {
                 $("#node-input-row-org").hide();
                 $("#node-input-row-extras").hide();
             }
@@ -745,28 +829,28 @@
             $("#node-input-influxdb").change(function () {
                 switch (selectedVersion()) {
                     case 'v1.8-flux':
-                        update18FluxOptions();                    
+                        update18FluxOptions();
                         break;
                     case 'v2.0':
-                        update20Options();                    
+                        update20Options();
                         break;
                     default:
                         update18Options();
                 }
             });
         },
-        oneditsave: function() {
+        oneditsave: function () {
             $("#node-input-query").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
-            
+
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
                 $("#node-input-retentionPolicy").val("");
             }
         },
-        oneditcancel: function() {
+        oneditcancel: function () {
             this.editor.destroy();
             delete this.editor;
         }
