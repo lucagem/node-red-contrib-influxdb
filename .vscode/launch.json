@@ -5,9 +5,9 @@
             "name": "Debug Node-RED with InfluxDB nodes",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceFolder}/node_modules/.bin/node-red",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
             "args": [
-                "--userDir", "${workspaceFolder}/.node-red-dev",
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
                 "--verbose"
             ],
             "console": "integratedTerminal",

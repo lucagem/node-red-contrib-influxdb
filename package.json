@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified yet!\" && exit 1",
     "dev-setup": "node setup-dev.js",
     "dev": "node-red --userDir ./.node-red-dev --verbose",
-    "dev-debug": "node --inspect=9229 ./node_modules/.bin/node-red --userDir ./.node-red-dev --verbose"
+    "dev-debug": "node --inspect=9229 ./node_modules/node-red/red.js --userDir ./.node-red-dev --verbose"
   },
   "devDependencies": {
     "node-red": "^3.1.15"
