@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Node-RED with InfluxDB nodes",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/.bin/node-red",
+            "args": [
+                "--userDir", "${workspaceFolder}/.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9229"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Attach to Node-RED",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        }
+    ]
+}

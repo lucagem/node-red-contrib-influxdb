@@ -4,7 +4,13 @@
   "description": "Node-RED nodes to save and query data from an influxdb time series database",
   "main": "influxdb.js",
   "scripts": {
-    "test": "echo \"Error: no test specified yet!\" && exit 1"
+    "test": "echo \"Error: no test specified yet!\" && exit 1",
+    "dev-setup": "node setup-dev.js",
+    "dev": "node-red --userDir ./.node-red-dev --verbose",
+    "dev-debug": "node --inspect=9229 ./node_modules/.bin/node-red --userDir ./.node-red-dev --verbose"
+  },
+  "devDependencies": {
+    "node-red": "^3.1.15"
   },
   "repository": {
     "type": "git",
@@ -32,8 +38,8 @@
     }
   },
   "dependencies": {
-    "influx": "~5.9.3",
     "@influxdata/influxdb-client": "~1.33.2",
+    "influx": "~5.9.3",
     "lodash": "~4.17.21"
   },
   "engines": {
