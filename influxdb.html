@@ -65,65 +65,136 @@
         <!-- LucaT: Original section in page "Configuration" (END) -->
 
         <!-- LucaT: New section in page "Dynamic Properties" (START) -->
-		<div id="influxdb-tab-dynamic" style="display:none">
+        <div id="influxdb-tab-dynamic" style="display:none">
+            <!-- Connection Control -->
+            <div class="form-row">
+                <label for="node-config-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
+                <input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
+                <div class="form-tips" style="margin-left: 0;">Leave empty for normal connection. Use 'false' or '0' to disable connection (no errors).</div>
+            </div>
             
-			<div class="form-row">
-				<label for="node-config-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
-				<input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
-				<div class="form-tips">Leave empty for normal connection. Use 'false' or '0' to disable connection (no errors).</div>
-			</div>
-			
-			<hr style="margin: 20px 0;">
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDB Version</label>
-				<input type="text" id="node-config-input-dynamicVersion" placeholder="1 | 1.8 | 2 | ${IDB_VERSION}">
-				<div class="form-tips">Accepted values: 1, 1.8, 2. Overrides the configuration tab version if set.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicUrl"><i class="fa fa-server"></i> URL</label>
-				<input type="text" id="node-config-input-dynamicUrl" placeholder="http://localhost:8086 | ${IDB_URL}">
-				<div class="form-tips">Full URL for InfluxDB server.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicDatabase"><i class="fa fa-database"></i> Database</label>
-				<input type="text" id="node-config-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE}">
-				<div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicOrg"><i class="fa fa-user"></i> Organization</label>
-				<input type="text" id="node-config-input-dynamicOrg" placeholder="my-org | ${IDB_ORG}">
-				<div class="form-tips">For InfluxDB 2.0.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicBucket"><i class="fa fa-archive"></i> Bucket</label>
-				<input type="text" id="node-config-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET}">
-				<div class="form-tips">For InfluxDB 2.0.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicUsername"><i class="fa fa-user"></i> Username</label>
-				<input type="text" id="node-config-input-dynamicUsername" placeholder="admin | ${IDB_USERNAME}">
-				<div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
-			</div>		
-			<div class="form-row">
-				<label for="node-config-input-dynamicPassword"><i class="fa fa-lock"></i> Password</label>
-				<input type="text" id="node-config-input-dynamicPassword" placeholder="password | ${IDB_PASSWORD}">
-				<div class="form-tips">For InfluxDB 1.x and 1.8-flux.</div>
-			</div>
-			
-			<div class="form-row">
-				<label for="node-config-input-dynamicToken"><i class="fa fa-key"></i> Token</label>
-				<input type="text" id="node-config-input-dynamicToken" placeholder="my-token | ${IDB_TOKEN}">
-				<div class="form-tips">For InfluxDB 1.8-flux and 2.0.</div>
-			</div>
-		</div>
+            <!-- General Version Control -->
+            <hr style="margin: 20px 0;">
+            <div class="form-row">
+                <label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDB Version</label>
+                <input type="text" id="node-config-input-dynamicVersion" placeholder="1 | 1.8 | 2 | ${IDB_VERSION}">
+                <div class="form-tips" style="margin-left: 0;">Accepted values: 1, 1.8, 2. Overrides the configuration tab version if set.</div>
+            </div>
+            
+            <!-- InfluxDB 1.8 Section -->
+            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 1.8 Configuration</h4>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicHostname18"><i class="fa fa-server"></i> Hostname (1.8)</label>
+                <input type="text" id="node-config-input-dynamicHostname18" placeholder="localhost | ${IDB_HOSTNAME}">
+                <div class="form-tips" style="margin-left: 0;">Hostname for InfluxDB 1.8 version.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicPort18"><i class="fa fa-plug"></i> Port (1.8)</label>
+                <input type="text" id="node-config-input-dynamicPort18" placeholder="8086 | ${IDB_PORT}">
+                <div class="form-tips" style="margin-left: 0;">Port for InfluxDB 1.8 version.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicDatabase18"><i class="fa fa-database"></i> Database (1.8)</label>
+                <input type="text" id="node-config-input-dynamicDatabase18" placeholder="mydb | ${IDB_DATABASE}">
+                <div class="form-tips" style="margin-left: 0;">Database name for InfluxDB 1.8.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicUsername18"><i class="fa fa-user"></i> Username (1.8)</label>
+                <input type="text" id="node-config-input-dynamicUsername18" placeholder="admin | ${IDB_USERNAME}">
+                <div class="form-tips" style="margin-left: 0;">Username for InfluxDB 1.8.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicPassword18"><i class="fa fa-lock"></i> Password (1.8)</label>
+                <input type="text" id="node-config-input-dynamicPassword18" placeholder="${IDB_PASSWORD}">
+                <div class="form-tips" style="margin-left: 0;">Password for InfluxDB 1.8.</div>
+            </div>
+            
+            <!-- InfluxDB 2.0 Section -->
+            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 2.0 Configuration</h4>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicUrl20"><i class="fa fa-server"></i> URL (2.0)</label>
+                <input type="text" id="node-config-input-dynamicUrl20" placeholder="http://localhost:8086 | ${IDB_URL}">
+                <div class="form-tips" style="margin-left: 0;">Full URL for InfluxDB 2.0 server.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicOrg20"><i class="fa fa-users"></i> Organization (2.0)</label>
+                <input type="text" id="node-config-input-dynamicOrg20" placeholder="my-org | ${IDB_ORG}">
+                <div class="form-tips" style="margin-left: 0;">Organization for InfluxDB 2.0.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicBucket20"><i class="fa fa-archive"></i> Bucket (2.0)</label>
+                <input type="text" id="node-config-input-dynamicBucket20" placeholder="my-bucket | ${IDB_BUCKET}">
+                <div class="form-tips" style="margin-left: 0;">Bucket for InfluxDB 2.0.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicToken20"><i class="fa fa-key"></i> Token (2.0)</label>
+                <input type="text" id="node-config-input-dynamicToken20" placeholder="${IDB_TOKEN}">
+                <div class="form-tips" style="margin-left: 0;">Authentication token for InfluxDB 2.0.</div>
+            </div>
+            
+            <!-- InfluxDB 1.0 Section -->
+            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 1.0 Configuration</h4>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicHostname10"><i class="fa fa-server"></i> Hostname (1.0)</label>
+                <input type="text" id="node-config-input-dynamicHostname10" placeholder="localhost | ${IDB_HOSTNAME}">
+                <div class="form-tips" style="margin-left: 0;">Hostname for InfluxDB 1.0 version.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicPort10"><i class="fa fa-plug"></i> Port (1.0)</label>
+                <input type="text" id="node-config-input-dynamicPort10" placeholder="8086 | ${IDB_PORT}">
+                <div class="form-tips" style="margin-left: 0;">Port for InfluxDB 1.0 version.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicDatabase10"><i class="fa fa-database"></i> Database (1.0)</label>
+                <input type="text" id="node-config-input-dynamicDatabase10" placeholder="mydb | ${IDB_DATABASE}">
+                <div class="form-tips" style="margin-left: 0;">Database name for InfluxDB 1.0.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicUsername10"><i class="fa fa-user"></i> Username (1.0)</label>
+                <input type="text" id="node-config-input-dynamicUsername10" placeholder="admin | ${IDB_USERNAME}">
+                <div class="form-tips" style="margin-left: 0;">Username for InfluxDB 1.0.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicPassword10"><i class="fa fa-lock"></i> Password (1.0)</label>
+                <input type="text" id="node-config-input-dynamicPassword10" placeholder="${IDB_PASSWORD}">
+                <div class="form-tips" style="margin-left: 0;">Password for InfluxDB 1.0.</div>
+            </div>
+            
+            <!-- Common Configuration -->
+            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">Common Configuration</h4>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicTimeout"><i class="fa fa-clock-o"></i> Timeout (seconds)</label>
+                <input type="text" id="node-config-input-dynamicTimeout" placeholder="10 | ${IDB_TIMEOUT}">
+                <div class="form-tips" style="margin-left: 0;">Connection timeout in seconds.</div>
+            </div>
+            
+            <div class="form-row">
+                <label for="node-config-input-dynamicRejectUnauthorized"><i class="fa fa-shield"></i> Reject Unauthorized</label>
+                <input type="text" id="node-config-input-dynamicRejectUnauthorized" placeholder="true | false | ${IDB_REJECT_UNAUTHORIZED}">
+                <div class="form-tips" style="margin-left: 0;">Reject unauthorized SSL certificates (true/false).</div>
+            </div>
+        </div>         
+        <!-- LucaT: New section in page "Dynamic Properties" (END) -->
 	</div>
-    <!-- LucaT: New section in page "Dynamic Properties" (END) -->
     <!-- LucaT (END) -->
 </script>
 
