@@ -71,50 +71,71 @@
                 <label for="node-config-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
                 <input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
             </div>
-            <div class="form-tips">Leave empty for normal connection. Use 'false' or '0' to disable connection (no errors).</div>
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Connection Control:</strong> Leave empty for normal connection behavior. 
+                Set to <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">'false'</code> or 
+                <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">'0'</code> to disable the connection completely. 
+                When disabled, all InfluxDb operations will be silently ignored without generating errors. 
+                Supports environment variables like <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ENABLED}</code>.
+            </div>
             
             <!-- General Version Control -->
-            <hr style="margin: 20px 0;">
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
-                <label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDB Version</label>
+                <label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDb Version</label>
                 <input type="text" id="node-config-input-dynamicVersion" placeholder="1 | 1.8 | 2 | ${IDB_VERSION}">
             </div>
-            <div class="form-tips">Accepted values: 1, 1.8, 2. Overrides the configuration tab version if set.</div>
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Version Override:</strong> Accepted values are <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">1</code>, 
+                <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">1.8</code>, or 
+                <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">2</code>. 
+                When set, this will override the version selected in the Configuration tab. 
+                Use environment variables like <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_VERSION}</code> for dynamic configuration.
+            </div>
             
-            <!-- InfluxDB 1.8 Section -->
-            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 1.8 Configuration</h4>
+            <!-- InfluxDb 1.8 Section -->
+            <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 1.8 Configuration</h4>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicHostname18"><i class="fa fa-server"></i> Hostname (1.8)</label>
                 <input type="text" id="node-config-input-dynamicHostname18" placeholder="localhost | ${IDB_HOSTNAME}">
             </div>
-            <div class="form-tips">Hostname for InfluxDB 1.8 version.</div>
+            <div class="form-tips" style="margin-bottom: 8px; padding: 6px 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 3px; line-height: 1.3;">
+                Hostname for InfluxDb 1.8 version. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_HOSTNAME}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicPort18"><i class="fa fa-plug"></i> Port (1.8)</label>
                 <input type="text" id="node-config-input-dynamicPort18" placeholder="8086 | ${IDB_PORT}">
             </div>
-            <div class="form-tips">Port for InfluxDB 1.8 version.</div>
+            <div class="form-tips" style="margin-bottom: 8px; padding: 6px 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 3px; line-height: 1.3;">
+                Port for InfluxDb 1.8 version. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">8086</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PORT}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicDatabase18"><i class="fa fa-database"></i> Database (1.8)</label>
                 <input type="text" id="node-config-input-dynamicDatabase18" placeholder="mydb | ${IDB_DATABASE}">
             </div>
-            <div class="form-tips">Database name for InfluxDB 1.8.</div>
+            <div class="form-tips" style="margin-bottom: 8px; padding: 6px 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 3px; line-height: 1.3;">
+                Database name for InfluxDb 1.8. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_DATABASE}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicUsername18"><i class="fa fa-user"></i> Username (1.8)</label>
                 <input type="text" id="node-config-input-dynamicUsername18" placeholder="admin | ${IDB_USERNAME}">
             </div>
-            <div class="form-tips">Username for InfluxDB 1.8.</div>
+            <div class="form-tips" style="margin-bottom: 8px; padding: 6px 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 3px; line-height: 1.3;">
+                Username for InfluxDb 1.8 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicPassword18"><i class="fa fa-lock"></i> Password (1.8)</label>
                 <input type="text" id="node-config-input-dynamicPassword18" placeholder="${IDB_PASSWORD}">
             </div>
-            <div class="form-tips">Password for InfluxDB 1.8.</div>
-            
+            <div class="form-tips" style="margin-bottom: 15px; padding: 6px 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 3px; line-height: 1.3;">
+                Password for InfluxDb 1.8 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD}</code> for environment variable.
+            </div>            
             <!-- InfluxDB 2.0 Section -->
             <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
             <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 2.0 Configuration</h4>
