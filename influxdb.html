@@ -257,7 +257,164 @@
                 }
             },
             timeout: { value: 10, required: false },
-            rejectUnauthorized: { value: true }
+            rejectUnauthorized: { value: true },
+            // LucaT: Dynamic Properties validation
+            dynamicEnabled: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid boolean-like value
+                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                }
+            },
+            dynamicVersion: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid version
+                    return ["1", "1.8", "2"].includes(value);
+                }
+            },
+            dynamicHostname18: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For hostname, accept any non-empty string that's not just whitespace
+                    return value.length > 0;
+                }
+            },
+            dynamicPort18: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid port number
+                    const port = parseInt(value);
+                    return !isNaN(port) && port > 0 && port <= 65535;
+                }
+            },
+            dynamicDatabase18: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For database name, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicUsername18: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For username, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicPassword18: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For password, accept any string (can be empty)
+                    return true;
+                }
+            },
+            dynamicUrl18Flux: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Basic URL validation - should start with http:// or https://
+                    return value.startsWith("http://") || value.startsWith("https://");
+                }
+            },
+            dynamicUrl20: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Basic URL validation - should start with http:// or https://
+                    return value.startsWith("http://") || value.startsWith("https://");
+                }
+            },
+            dynamicOrg20: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For organization, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicBucket20: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For bucket, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicToken20: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For token, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicTimeout: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid positive number
+                    const timeout = parseInt(value);
+                    return !isNaN(timeout) && timeout > 0;
+                }
+            },
+            dynamicRejectUnauthorized: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid boolean-like value
+                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                }
+            }
         },
         credentials: {
             username: { type: "text" },
@@ -297,6 +454,24 @@
                 tabs.resize()
             }, 0);
             // ------------ LucaT END
+
+            // ------------ LucaT: Initialize Dynamic Properties values (START)
+            // Popola i campi con i valori salvati
+            $("#node-config-input-dynamicEnabled").val(this.dynamicEnabled || "");
+            $("#node-config-input-dynamicVersion").val(this.dynamicVersion || "");
+            $("#node-config-input-dynamicHostname18").val(this.dynamicHostname18 || "");
+            $("#node-config-input-dynamicPort18").val(this.dynamicPort18 || "");
+            $("#node-config-input-dynamicDatabase18").val(this.dynamicDatabase18 || "");
+            $("#node-config-input-dynamicUsername18").val(this.dynamicUsername18 || "");
+            $("#node-config-input-dynamicPassword18").val(this.dynamicPassword18 || "");
+            $("#node-config-input-dynamicUrl18Flux").val(this.dynamicUrl18Flux || "");
+            $("#node-config-input-dynamicUrl20").val(this.dynamicUrl20 || "");
+            $("#node-config-input-dynamicOrg20").val(this.dynamicOrg20 || "");
+            $("#node-config-input-dynamicBucket20").val(this.dynamicBucket20 || "");
+            $("#node-config-input-dynamicToken20").val(this.dynamicToken20 || "");
+            $("#node-config-input-dynamicTimeout").val(this.dynamicTimeout || "");
+            $("#node-config-input-dynamicRejectUnauthorized").val(this.dynamicRejectUnauthorized || "");
+            // ------------ LucaT: Initialize Dynamic Properties values (END)
 
             function updateTLSOptions() {
                 if ($("#node-config-input-usetls").is(':checked')) {
@@ -592,6 +767,22 @@
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
                 $("#node-input-retentionPolicy").val("");
+                // ------------ LucaT: Save Dynamic Properties values (START)
+                this.dynamicEnabled = $("#node-config-input-dynamicEnabled").val();
+                this.dynamicVersion = $("#node-config-input-dynamicVersion").val();
+                this.dynamicHostname18 = $("#node-config-input-dynamicHostname18").val();
+                this.dynamicPort18 = $("#node-config-input-dynamicPort18").val();
+                this.dynamicDatabase18 = $("#node-config-input-dynamicDatabase18").val();
+                this.dynamicUsername18 = $("#node-config-input-dynamicUsername18").val();
+                this.dynamicPassword18 = $("#node-config-input-dynamicPassword18").val();
+                this.dynamicUrl18Flux = $("#node-config-input-dynamicUrl18Flux").val();
+                this.dynamicUrl20 = $("#node-config-input-dynamicUrl20").val();
+                this.dynamicOrg20 = $("#node-config-input-dynamicOrg20").val();
+                this.dynamicBucket20 = $("#node-config-input-dynamicBucket20").val();
+                this.dynamicToken20 = $("#node-config-input-dynamicToken20").val();
+                this.dynamicTimeout = $("#node-config-input-dynamicTimeout").val();
+                this.dynamicRejectUnauthorized = $("#node-config-input-dynamicRejectUnauthorized").val();
+                // ------------ LucaT: Save Dynamic Properties values (END)                
             }
         }
     });
