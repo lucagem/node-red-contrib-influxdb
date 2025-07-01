@@ -549,13 +549,27 @@ module.exports = function (RED) {
             var node = this;
             var client = this.influxdbConfig.client;
 
+            // LucaT: Aggiunta variabile per conteggio operazioni di lettura
+            node.readCount = 0;
+            // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
+            updateNodeStatus(node, node.influxdbConfig, node.readCount);
+
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+                // LucaT: Aggiorna status a "reading" durante l'operazione
+                node.readCount++;
+                node.status({
+                    fill: "blue",
+                    shape: "dot",
+                    text: `reading (${node.readCount})`
+                });
+
                 var query;
                 var rawOutput;
                 var queryOptions = {};
@@ -588,11 +602,15 @@ module.exports = function (RED) {
                 queryPromise.then(function (results) {
                     msg.payload = results;
                     send(msg);
+                    // LucaT: Ripristina lo status a "ready" dopo la lettura
+                    updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     done();
                 }).catch(function (err) {
                     msg.influx_error = {
                         statusCode: err.res ? err.res.statusCode : 503
                     }
+                    // LucaT: Ripristina lo status a "ready" dopo l'errore
+                    updateNodeStatus(node, node.influxdbConfig);
                     done(err);
                 });
             });
@@ -601,14 +619,28 @@ module.exports = function (RED) {
             let org = version === VERSION_20 ? this.org : ''
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
+            
+            // LucaT: Aggiunta variabile per conteggio operazioni di lettura
+            node.readCount = 0;
+            // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
+            updateNodeStatus(node, node.influxdbConfig, node.readCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+                // LucaT: Aggiorna status a "reading" durante l'operazione
+                node.readCount++;
+                node.status({
+                    fill: "blue",
+                    shape: "dot",
+                    text: `reading (${node.readCount})`
+                });
+
                 var query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
                     return done(RED._("influxdb.errors.noquery"));
@@ -623,16 +655,24 @@ module.exports = function (RED) {
                         msg.influx_error = {
                             errorMessage: error
                         };
+                        // LucaT: Ripristina lo status a "ready" dopo l'errore
+                        updateNodeStatus(node, node.influxdbConfig);
                         done(error);
                     },
                     complete() {
                         msg.payload = output;
                         send(msg);
+                        // LucaT: Ripristina lo status a "ready" dopo la lettura
+                        updateNodeStatus(node, node.influxdbConfig, node.readCount);
                         done();
                     },
                 });
             });
         }
+        // LucaT: Ascolta le modifiche alla configurazione
+        this.on('close', function () {
+            node.status({});
+        });
     }
 
     RED.nodes.registerType("influxdb in", InfluxInNode);
