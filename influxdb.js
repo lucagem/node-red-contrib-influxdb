@@ -12,7 +12,7 @@ module.exports = function (RED) {
     /**
      * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled
      */
-    function updateNodeStatus(node, client) {
+    function updateNodeStatus(node, client, operationCount) {
         if (!client || !isConnectionEnabled(client.dynamicEnabled)) {
             // Nodo disabilitato - status rosso con icona
             node.status({
@@ -22,11 +22,15 @@ module.exports = function (RED) {
             });
             return false; // Connessione disabilitata
         } else {
-            // Nodo abilitato - status verde
+            // Nodo abilitato - status verde con contatore opzionale
+            var statusText = "ready";
+            if (operationCount && operationCount > 0) {
+                statusText = `ready (${operationCount})`;
+            }
             node.status({
                 fill: "green",
                 shape: "dot",
-                text: "ready"
+                text: statusText
             });
             return true; // Connessione abilitata
         }
@@ -173,7 +177,7 @@ module.exports = function (RED) {
         var measurement = msg.hasOwnProperty('measurement') ? msg.measurement : node.measurement;
         if (!measurement) {
             // LucaT: Ripristina status anche in caso di errore
-            updateNodeStatus(node, node.influxdbConfig);            
+            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
             return done(RED._("influxdb.errors.nomeasurement"));
         }
         try {
@@ -219,14 +223,14 @@ module.exports = function (RED) {
 
             node.client.flush(true).then(() => {
                 // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
-                updateNodeStatus(node, node.influxdbConfig);                
+                updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                 done();
             }).catch(error => {
                 msg.influx_error = {
                     errorMessage: error
                 };
                 // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
-                updateNodeStatus(node, node.influxdbConfig);                
+                updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                 done(error);
             });
         } catch (error) {
@@ -234,7 +238,7 @@ module.exports = function (RED) {
                 errorMessage: error
             };
             // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
-            updateNodeStatus(node, node.influxdbConfig);                
+            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
             done(error);
         }
     }
@@ -257,6 +261,8 @@ module.exports = function (RED) {
         this.org = n.org;
         this.bucket = n.bucket;
 
+        // LucaT: Aggiungi contatore delle operazioni
+        this.writeCount = 0;
         // LucaT: Controlla e aggiorna status all'inizializzazione
         var connectionEnabled = updateNodeStatus(this, this.influxdbConfig);
 
@@ -280,10 +286,12 @@ module.exports = function (RED) {
                     return;
                 }
                 // LucaT: Aggiorna status a "writing" durante l'operazione
+                // LucaT: Incrementa contatore e aggiorna status a "writing"
+                node.writeCount++;
                 node.status({
                     fill: "blue",
                     shape: "dot",
-                    text: "writing"
+                    text: `writing (${node.writeCount})`
                 });
 
                 var measurement;
@@ -374,7 +382,7 @@ module.exports = function (RED) {
                     done(err);
                 });
             });
-        } else if (version === VERSION_18_FLUX || version === VERSION_20) {            
+        } else if (version === VERSION_18_FLUX || version === VERSION_20) {
             let bucket = this.bucket;
             if (version === VERSION_18_FLUX) {
                 let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
@@ -394,11 +402,12 @@ module.exports = function (RED) {
                     return;
                 }
                 // LucaT: Aggiorna status a "writing" durante l'operazione
+                node.writeCount++;
                 node.status({
                     fill: "blue",
-                    shape: "dot", 
-                    text: "writing"
-                });                
+                    shape: "dot",
+                    text: `writing (${node.writeCount})`
+                });
                 writePoints(msg, node, done);
             });
         }
