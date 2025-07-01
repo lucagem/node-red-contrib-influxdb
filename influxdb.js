@@ -197,10 +197,6 @@ module.exports = function (RED) {
         this.isConnectionEnabled = function () {
             return isConnectionEnabled(this.dynamicEnabled);
         };
-        // LucaT: Aggiunto metodo helper per ottenere la versione effettiva
-        this.getEffectiveVersion = function () {
-            return getDynamicVersion(this.dynamicVersion, this.influxdbVersion);
-        };
         this.influxdbVersion = n.influxdbVersion;
     }
 
@@ -353,7 +349,7 @@ module.exports = function (RED) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
         }
-        let version = this.effectiveVersion;
+        let version = this.influxdbConfig.effectiveVersion;
 
         var node = this;
 
@@ -523,7 +519,7 @@ module.exports = function (RED) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
         }
-        let version = this.effectiveVersion;
+        let version = this.influxdbConfig.effectiveVersion;
 
         var node = this;
 
@@ -706,7 +702,7 @@ module.exports = function (RED) {
             return;
         }
 
-        let version = this.effectiveVersion;
+        let version = this.influxdbConfig.effectiveVersion;
         if (version === VERSION_1X) {
             var node = this;
             var client = this.influxdbConfig.client;
