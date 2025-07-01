@@ -136,34 +136,41 @@
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
                 <strong>Password</strong> for InfluxDb 1.8 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD}</code> for environment variable.
             </div>            
-            <!-- InfluxDB 2.0 Section -->
-            <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 2.0 Configuration</h4>
+            <!-- InfluxDb 2.0 Section -->
+            <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 2.0 Configuration</h4>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicUrl20"><i class="fa fa-server"></i> URL (2.0)</label>
                 <input type="text" id="node-config-input-dynamicUrl20" placeholder="http://localhost:8086 | ${IDB_URL}">
             </div>
-            <div class="form-tips">Full URL for InfluxDB 2.0 server.</div>
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Full URL</strong> for InfluxDb 2.0 server. Include protocol and port. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_URL}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicOrg20"><i class="fa fa-users"></i> Organization (2.0)</label>
                 <input type="text" id="node-config-input-dynamicOrg20" placeholder="my-org | ${IDB_ORG}">
             </div>
-            <div class="form-tips">Organization for InfluxDB 2.0.</div>
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Organization</strong> name for InfluxDb 2.0. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_ORG}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicBucket20"><i class="fa fa-archive"></i> Bucket (2.0)</label>
                 <input type="text" id="node-config-input-dynamicBucket20" placeholder="my-bucket | ${IDB_BUCKET}">
             </div>
-            <div class="form-tips">Bucket for InfluxDB 2.0.</div>
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Bucket</strong> name for InfluxDb 2.0 (equivalent to database in v1.x). Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_BUCKET}</code> for environment variable.
+            </div>
             
             <div class="form-row">
                 <label for="node-config-input-dynamicToken20"><i class="fa fa-key"></i> Token (2.0)</label>
                 <input type="text" id="node-config-input-dynamicToken20" placeholder="${IDB_TOKEN}">
             </div>
-            <div class="form-tips">Authentication token for InfluxDB 2.0.</div>
-            
+            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Authentication token</strong> for InfluxDb 2.0. Required for authentication instead of username/password. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TOKEN}</code> for environment variable.
+            </div>            
             <!-- InfluxDB 1.0 Section -->
             <hr style="margin: 30px 0; border-top: 2px solid #ddd;">
             <h4 style="margin: 10px 0; color: #666; font-weight: bold;">InfluxDB 1.0 Configuration</h4>
