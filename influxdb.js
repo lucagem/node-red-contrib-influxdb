@@ -10,9 +10,9 @@ module.exports = function (RED) {
     const VERSION_20 = '2.0';
 
     /**
-     * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled
+     * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled e gestione errori
      */
-    function updateNodeStatus(node, client, operationCount) {
+    function updateNodeStatus(node, client, operationCount, errorState) {
         if (!client || !isConnectionEnabled(client.dynamicEnabled)) {
             // Nodo disabilitato - status rosso con icona
             node.status({
@@ -21,6 +21,24 @@ module.exports = function (RED) {
                 text: "disabled"
             });
             return false; // Connessione disabilitata
+        } else if (errorState) {
+            // Stato di errore - status giallo/arancione con icona di avviso
+            var errorText = "error";
+            if (typeof errorState === 'string') {
+                errorText = errorState;
+            } else if (errorState.message) {
+                // Tronca il messaggio di errore se troppo lungo
+                errorText = errorState.message.length > 20 ?
+                    errorState.message.substring(0, 17) + "..." :
+                    errorState.message;
+            }
+
+            node.status({
+                fill: "yellow",
+                shape: "ring",
+                text: errorText
+            });
+            return true; // Connessione comunque abilitata
         } else {
             // Nodo abilitato - status verde con contatore opzionale
             var statusText = "ready";
@@ -34,6 +52,41 @@ module.exports = function (RED) {
             });
             return true; // Connessione abilitata
         }
+    }
+
+    /**
+     * LucaT - Helper function per mostrare temporaneamente lo stato di errore e poi tornare a ready
+     */
+    function showTemporaryError(node, client, error, operationCount) {
+        // Mostra immediatamente l'errore
+        updateNodeStatus(node, client, operationCount, error);
+
+        // Dopo 3 secondi torna allo stato normale
+        setTimeout(() => {
+            updateNodeStatus(node, client, operationCount);
+        }, 3000);
+    }
+
+    /**
+     * LucaT - Helper function per creare un oggetto errore standardizzato
+     */
+    function createInfluxError(error) {
+        var influxError = {
+            errorMessage: error.message || error.toString() || "Unknown error"
+        };
+
+        // Se l'errore ha un response HTTP (versione 1.x), aggiungi lo status code
+        if (error.res && error.res.statusCode) {
+            influxError.statusCode = error.res.statusCode;
+        } else if (error.statusCode) {
+            // Se l'errore ha direttamente uno statusCode
+            influxError.statusCode = error.statusCode;
+        } else {
+            // Default status code per errori generici
+            influxError.statusCode = 503;
+        }
+
+        return influxError;
     }
 
     /**
@@ -375,11 +428,11 @@ module.exports = function (RED) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                 }).catch(function (err) {
-                    msg.influx_error = {
-                        statusCode: err.res ? err.res.statusCode : 503
-                    }
-                    updateNodeStatus(node, node.influxdbConfig);
-                    done(err);
+                    // LucaT: usa createInfluxError per standardizzare l'errore
+                    msg.influx_error = createInfluxError(error);
+                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                    showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
+                    done(error);
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
@@ -470,10 +523,11 @@ module.exports = function (RED) {
                 client.writePoints(msg.payload, writeOptions).then(() => {
                     done();
                 }).catch(function (err) {
-                    msg.influx_error = {
-                        statusCode: err.res ? err.res.statusCode : 503
-                    }
-                    done(err);
+                    // LucaT: usa createInfluxError per standardizzare l'errore
+                    msg.influx_error = createInfluxError(error);
+                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                    showTemporaryError(node, node.influxdbConfig, error, node.readCount || node.writeCount);
+                    done(error);
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
@@ -606,12 +660,11 @@ module.exports = function (RED) {
                     updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     done();
                 }).catch(function (err) {
-                    msg.influx_error = {
-                        statusCode: err.res ? err.res.statusCode : 503
-                    }
-                    // LucaT: Ripristina lo status a "ready" dopo l'errore
-                    updateNodeStatus(node, node.influxdbConfig);
-                    done(err);
+                    // LucaT: usa createInfluxError per standardizzare l'errore
+                    msg.influx_error = createInfluxError(error);
+                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                    showTemporaryError(node, node.influxdbConfig, error, node.readCount);
+                    done(error);
                 });
             });
 
@@ -619,7 +672,7 @@ module.exports = function (RED) {
             let org = version === VERSION_20 ? this.org : ''
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
-            
+
             // LucaT: Aggiunta variabile per conteggio operazioni di lettura
             node.readCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
