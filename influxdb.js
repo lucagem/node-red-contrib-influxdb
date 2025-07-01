@@ -488,7 +488,6 @@ module.exports = function (RED) {
         this.org = n.org;
         this.bucket = n.bucket;
 
-
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
@@ -500,16 +499,33 @@ module.exports = function (RED) {
         if (version === VERSION_1X) {
             var client = this.influxdbConfig.client;
 
+            // LucaT: Aggiunta variabile per conteggio operazioni di scrittura
+            node.writeCount = 0;
+            // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
+            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+
+                // LucaT: Aggiorna status a "writing" durante l'operazione
+                node.writeCount++;
+                node.status({
+                    fill: "blue",
+                    shape: "dot",
+                    text: `writing (${node.writeCount})`
+                });
+
                 var writeOptions = {};
                 var precision = msg.hasOwnProperty('precision') ? msg.precision : node.precision;
-                var retentionPolicy = msg.hasOwnProperty('retentionPolicy') ? msg.retentionPolicy : node.retentionPolicy;
+                var retentionPolicy = msg.hasOwnProperty('retentionPolicy') ?
+                    msg.retentionPolicy : node.retentionPolicy;
+                var database = msg.hasOwnProperty('database') ? msg.database : node.database;
 
                 if (precision) {
                     writeOptions.precision = precision;
@@ -519,63 +535,124 @@ module.exports = function (RED) {
                     writeOptions.retentionPolicy = retentionPolicy;
                 }
 
-                client.writePoints(msg.payload, writeOptions).then(() => {
+                if (database) {
+                    writeOptions.database = database;
+                }
+
+                if (_.isArray(msg.payload) && msg.payload.length > 0) {
+                    client.writePoints(msg.payload, writeOptions).then(() => {
+                        // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
+                        updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+                        done();
+                    }).catch(error => {
+                        // LucaT: usa createInfluxError per standardizzare l'errore
+                        msg.influx_error = createInfluxError(error);
+                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                        showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
+                        done(error);
+                    });
+                } else {
+                    // LucaT: Ripristina status a "ready" se non ci sono dati da scrivere
+                    updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     done();
-                }).catch(error => {
-                    // LucaT: usa createInfluxError per standardizzare l'errore
-                    msg.influx_error = createInfluxError(error);
-                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
-                    showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
-                    done(error);
-                });
+                }
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            let bucket = node.bucket;
+            let bucket;
             if (version === VERSION_18_FLUX) {
-                let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
+                let retentionPolicy = this.retentionPolicyV18Flux ?
+                    this.retentionPolicyV18Flux : 'autogen';
                 bucket = `${this.database}/${retentionPolicy}`;
+            } else {
+                bucket = this.bucket;
             }
             let org = version === VERSION_18_FLUX ? '' : this.org;
 
-            var client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
+            this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
+
+            // LucaT: Aggiunta variabile per conteggio operazioni di scrittura
+            node.writeCount = 0;
+            // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
+            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
-                msg.payload.forEach(element => {
-                    let point = new Point(element.measurement);
 
-                    // time is reserved as a field name still! will be overridden by the timestamp below.
-                    addFieldsToPoint(point, element.fields);
+                // LucaT: Aggiorna status a "writing" durante l'operazione
+                node.writeCount++;
+                node.status({
+                    fill: "blue",
+                    shape: "dot",
+                    text: `writing (${node.writeCount})`
+                });
 
-                    let tags = element.tags;
-                    if (tags) {
-                        for (const prop in tags) {
-                            point.tag(prop, tags[prop]);
+                if (_.isArray(msg.payload) && msg.payload.length > 0) {
+                    var client = node.client;
+
+                    msg.payload.forEach(element => {
+                        let measurement = element.measurement;
+                        let point = new Point(measurement);
+                        // timestamp and tags are optional in the element
+                        // fields are required - if not specified it will be set to the payload minus the measurement
+                        let fields = element.fields === undefined ? _.omit(element, ['measurement', 'timestamp', 'tags']) : element.fields;
+
+                        // if there are no fields, show an error - cant have an empty InfluxDb write!
+                        if (_.isEmpty(fields)) {
+                            // LucaT: usa createInfluxError per standardizzare l'errore
+                            msg.influx_error = createInfluxError(new Error("Fields are required"));
+                            // LucaT: Ripristina status a "ready" dopo l'errore
+                            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+                            return done(new Error("Fields are required"));
                         }
-                    }
-                    if (element.timestamp) {
-                        point.timestamp(element.timestamp);
-                    }
-                    client.writePoint(point);
-                });
 
-                // ensure we write everything including scheduled retries
-                client.flush(true).then(() => {
+                        // The value of element.timestamp will be used even if it is
+                        // undefined, however the Point library will handle that to set the
+                        // timestamp to be the current timestamp.
+                        // If the timestamp is provided in the payload then this will
+                        // be overridden by the timestamp below.
+                        addFieldsToPoint(point, element.fields);
+
+                        let tags = element.tags;
+                        if (tags) {
+                            for (const prop in tags) {
+                                point.tag(prop, tags[prop]);
+                            }
+                        }
+                        if (element.timestamp) {
+                            point.timestamp(element.timestamp);
+                        }
+                        client.writePoint(point);
+                    });
+
+                    // ensure we write everything including scheduled retries
+                    client.flush(true).then(() => {
+                        // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
+                        updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+                        done();
+                    }).catch(error => {
+                        // LucaT: usa createInfluxError per standardizzare l'errore
+                        msg.influx_error = createInfluxError(error);
+                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                        showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
+                        done(error);
+                    });
+                } else {
+                    // LucaT: Ripristina status a "ready" se non ci sono dati da scrivere
+                    updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     done();
-                }).catch(error => {
-                    // LucaT: usa createInfluxError per standardizzare l'errore
-                    msg.influx_error = createInfluxError(error);
-                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
-                    showTemporaryError(node, node.influxdbConfig, error, node.readCount || node.writeCount);
-                    done(error);
-                });
+                }
             });
         }
+        // LucaT: Ascolta le modifiche alla configurazione
+        this.on('close', function () {
+            node.status({});
+        });
     }
 
     RED.nodes.registerType("influxdb batch", InfluxBatchNode);
