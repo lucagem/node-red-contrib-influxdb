@@ -392,6 +392,62 @@
                     return value.length > 0;
                 }
             },
+            dynamicHostname10: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For hostname, accept any non-empty string that's not just whitespace
+                    return value.length > 0;
+                }
+            },
+            dynamicPort10: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid port number
+                    const port = parseInt(value);
+                    return !isNaN(port) && port > 0 && port <= 65535;
+                }
+            },
+            dynamicDatabase10: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For database name, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicUsername10: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For username, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicPassword10: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For password, accept any string (can be empty)
+                    return true;
+                }
+            },
             dynamicTimeout: {
                 value: "",
                 validate: function (value) {
@@ -414,7 +470,7 @@
                     // Check if it's a valid boolean-like value
                     return ["true", "false", "0", "1"].includes(value.toLowerCase());
                 }
-            }
+            },
         },
         credentials: {
             username: { type: "text" },
@@ -459,16 +515,25 @@
             // Popola i campi con i valori salvati
             $("#node-config-input-dynamicEnabled").val(this.dynamicEnabled || "");
             $("#node-config-input-dynamicVersion").val(this.dynamicVersion || "");
+            // Sezione 1.8
             $("#node-config-input-dynamicHostname18").val(this.dynamicHostname18 || "");
             $("#node-config-input-dynamicPort18").val(this.dynamicPort18 || "");
             $("#node-config-input-dynamicDatabase18").val(this.dynamicDatabase18 || "");
             $("#node-config-input-dynamicUsername18").val(this.dynamicUsername18 || "");
             $("#node-config-input-dynamicPassword18").val(this.dynamicPassword18 || "");
             $("#node-config-input-dynamicUrl18Flux").val(this.dynamicUrl18Flux || "");
+            // Sezione 2.0
             $("#node-config-input-dynamicUrl20").val(this.dynamicUrl20 || "");
             $("#node-config-input-dynamicOrg20").val(this.dynamicOrg20 || "");
             $("#node-config-input-dynamicBucket20").val(this.dynamicBucket20 || "");
             $("#node-config-input-dynamicToken20").val(this.dynamicToken20 || "");
+            // Sezione 1.0
+            $("#node-config-input-dynamicHostname10").val(this.dynamicHostname10 || "");
+            $("#node-config-input-dynamicPort10").val(this.dynamicPort10 || "");
+            $("#node-config-input-dynamicDatabase10").val(this.dynamicDatabase10 || "");
+            $("#node-config-input-dynamicUsername10").val(this.dynamicUsername10 || "");
+            $("#node-config-input-dynamicPassword10").val(this.dynamicPassword10 || "");
+            // Proprietà generali
             $("#node-config-input-dynamicTimeout").val(this.dynamicTimeout || "");
             $("#node-config-input-dynamicRejectUnauthorized").val(this.dynamicRejectUnauthorized || "");
             // ------------ LucaT: Initialize Dynamic Properties values (END)
@@ -770,19 +835,28 @@
                 // ------------ LucaT: Save Dynamic Properties values (START)
                 this.dynamicEnabled = $("#node-config-input-dynamicEnabled").val();
                 this.dynamicVersion = $("#node-config-input-dynamicVersion").val();
+                // Sezione 1.8
                 this.dynamicHostname18 = $("#node-config-input-dynamicHostname18").val();
                 this.dynamicPort18 = $("#node-config-input-dynamicPort18").val();
                 this.dynamicDatabase18 = $("#node-config-input-dynamicDatabase18").val();
                 this.dynamicUsername18 = $("#node-config-input-dynamicUsername18").val();
                 this.dynamicPassword18 = $("#node-config-input-dynamicPassword18").val();
                 this.dynamicUrl18Flux = $("#node-config-input-dynamicUrl18Flux").val();
+                // Sezione 2.0
                 this.dynamicUrl20 = $("#node-config-input-dynamicUrl20").val();
                 this.dynamicOrg20 = $("#node-config-input-dynamicOrg20").val();
                 this.dynamicBucket20 = $("#node-config-input-dynamicBucket20").val();
                 this.dynamicToken20 = $("#node-config-input-dynamicToken20").val();
+                // Sezione 1.0
+                this.dynamicHostname10 = $("#node-config-input-dynamicHostname10").val();
+                this.dynamicPort10 = $("#node-config-input-dynamicPort10").val();
+                this.dynamicDatabase10 = $("#node-config-input-dynamicDatabase10").val();
+                this.dynamicUsername10 = $("#node-config-input-dynamicUsername10").val();
+                this.dynamicPassword10 = $("#node-config-input-dynamicPassword10").val();
+                // Proprietà generali
                 this.dynamicTimeout = $("#node-config-input-dynamicTimeout").val();
                 this.dynamicRejectUnauthorized = $("#node-config-input-dynamicRejectUnauthorized").val();
-                // ------------ LucaT: Save Dynamic Properties values (END)                
+                // ------------ LucaT: Save Dynamic Properties values (END)
             }
         }
     });
