@@ -172,6 +172,8 @@ module.exports = function (RED) {
     function writePoints(msg, node, done) {
         var measurement = msg.hasOwnProperty('measurement') ? msg.measurement : node.measurement;
         if (!measurement) {
+            // LucaT: Ripristina status anche in caso di errore
+            updateNodeStatus(node, node.influxdbConfig);            
             return done(RED._("influxdb.errors.nomeasurement"));
         }
         try {
@@ -216,17 +218,23 @@ module.exports = function (RED) {
             }
 
             node.client.flush(true).then(() => {
+                // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
+                updateNodeStatus(node, node.influxdbConfig);                
                 done();
             }).catch(error => {
                 msg.influx_error = {
                     errorMessage: error
                 };
+                // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
+                updateNodeStatus(node, node.influxdbConfig);                
                 done(error);
             });
         } catch (error) {
             msg.influx_error = {
                 errorMessage: error
             };
+            // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
+            updateNodeStatus(node, node.influxdbConfig);                
             done(error);
         }
     }
