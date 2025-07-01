@@ -14,7 +14,8 @@
             "env": {
                 "NODE_ENV": "development",
                 "DEBUG": "influx*",
-                "IDB_ENABLED": "false"
+                "IDB_ENABLED": "false",
+                "IDB_VERSION": "2",
             },
             "skipFiles": [
                 "<node_internals>/**"
