@@ -10,6 +10,22 @@ module.exports = function (RED) {
     const VERSION_20 = '2.0';
 
     /**
+     * LucaT - Helper function to check if connection is enabled based on dynamicEnabled value
+     */
+    function isConnectionEnabled(dynamicEnabled) {
+        // Se dynamicEnabled è null, undefined o stringa vuota, la connessione è abilitata per default
+        if (!dynamicEnabled || dynamicEnabled.trim() === '') {
+            return true;
+        }
+
+        // Converte il valore in stringa e rimuove spazi
+        var value = String(dynamicEnabled).trim().toLowerCase();
+
+        // Controlla se il valore indica disabilitazione
+        return !(value === 'false' || value === '0');
+    }
+
+    /**
      * Config node. Currently we only connect to one host.
      */
     function InfluxConfigNode(n) {
@@ -19,8 +35,11 @@ module.exports = function (RED) {
         this.database = n.database;
         this.name = n.name;
 
+        // LucaT: Aggiunto supporto per dynamicEnabled
+        this.dynamicEnabled = n.dynamicEnabled;
+
         var clientOptions = null;
-        
+
         if (!n.influxdbVersion) {
             n.influxdbVersion = VERSION_1X;
         }
@@ -53,7 +72,7 @@ module.exports = function (RED) {
                 password: this.credentials.password
             });
         } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
-            const timeout =  Math.floor(+(n.timeout?n.timeout:10)*1000) // convert from seconds to milliseconds
+            const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
 
             const token = n.influxdbVersion === VERSION_18_FLUX ?
                 `${this.credentials.username}:${this.credentials.password}` :
@@ -67,8 +86,18 @@ module.exports = function (RED) {
             }
             this.client = new InfluxDB(clientOptions);
         }
+        // LucaT: Aggiuto metodo helper per verificare se la connessione è abilitata
+        this.isConnectionEnabled = function () {
+            return isConnectionEnabled(this.dynamicEnabled);
+        };
         this.influxdbVersion = n.influxdbVersion;
     }
+
+    /*
+    InfluxConfigNode.prototype.toString = function () {
+        return this.name ? this.name : this.hostname + ":" + this.port + "/" + this.database;
+    };
+    */
 
     RED.nodes.registerType("influxdb", InfluxConfigNode, {
         credentials: {
@@ -86,7 +115,7 @@ module.exports = function (RED) {
         for (const prop in fields) {
             const value = fields[prop];
             if (isIntegerString(value)) {
-                fields[prop] = parseInt(value.substring(0,value.length-1));
+                fields[prop] = parseInt(value.substring(0, value.length - 1));
             }
         }
     }
@@ -99,7 +128,7 @@ module.exports = function (RED) {
         } else if (typeof value === 'string') {
             // string values with numbers ending with 'i' are considered integers            
             if (isIntegerString(value)) {
-                value = parseInt(value.substring(0,value.length-1));
+                value = parseInt(value.substring(0, value.length - 1));
                 point.intField(name, value);
             } else {
                 point.stringField(name, value);
@@ -162,15 +191,15 @@ module.exports = function (RED) {
                     node.client.writePoint(point);
                 }
             }
-    
+
             node.client.flush(true).then(() => {
-                    done();
-                }).catch(error => {
-                    msg.influx_error = {
-                        errorMessage: error
-                    };
-                    done(error);
-                });
+                done();
+            }).catch(error => {
+                msg.influx_error = {
+                    errorMessage: error
+                };
+                done(error);
+            });
         } catch (error) {
             msg.influx_error = {
                 errorMessage: error
@@ -209,6 +238,12 @@ module.exports = function (RED) {
             var client = this.influxdbConfig.client;
 
             node.on("input", function (msg, send, done) {
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }
                 var measurement;
                 var writeOptions = {};
 
@@ -305,7 +340,14 @@ module.exports = function (RED) {
 
             this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
 
+
             node.on("input", function (msg, send, done) {
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }
                 writePoints(msg, node, done);
             });
         }
@@ -343,6 +385,12 @@ module.exports = function (RED) {
             var client = this.influxdbConfig.client;
 
             node.on("input", function (msg, send, done) {
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }                
                 var writeOptions = {};
                 var precision = msg.hasOwnProperty('precision') ? msg.precision : node.precision;
                 var retentionPolicy = msg.hasOwnProperty('retentionPolicy') ? msg.retentionPolicy : node.retentionPolicy;
@@ -375,10 +423,15 @@ module.exports = function (RED) {
             var client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
 
             node.on("input", function (msg, send, done) {
-
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }
                 msg.payload.forEach(element => {
                     let point = new Point(element.measurement);
-        
+
                     // time is reserved as a field name still! will be overridden by the timestamp below.
                     addFieldsToPoint(point, element.fields);
 
@@ -396,13 +449,13 @@ module.exports = function (RED) {
 
                 // ensure we write everything including scheduled retries
                 client.flush(true).then(() => {
-                        done();
-                    }).catch(error => {
-                        msg.influx_error = {
-                            errorMessage: error
-                        };
-                        done(error);
-                    });
+                    done();
+                }).catch(error => {
+                    msg.influx_error = {
+                        errorMessage: error
+                    };
+                    done(error);
+                });
             });
         }
     }
@@ -433,6 +486,12 @@ module.exports = function (RED) {
             var client = this.influxdbConfig.client;
 
             node.on("input", function (msg, send, done) {
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }                
                 var query;
                 var rawOutput;
                 var queryOptions = {};
@@ -480,6 +539,12 @@ module.exports = function (RED) {
             var node = this;
 
             node.on("input", function (msg, send, done) {
+                // LucaT: Controlla se la connessione è abilitata
+                if (!node.influxdbConfig.isConnectionEnabled()) {
+                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    done();
+                    return;
+                }                
                 var query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
                     return done(RED._("influxdb.errors.noquery"));
