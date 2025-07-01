@@ -28,13 +28,13 @@ module.exports = function (RED) {
                 errorText = errorState;
             } else if (errorState.message) {
                 // Tronca il messaggio di errore se troppo lungo
-                errorText = errorState.message.length > 20 ?
-                    errorState.message.substring(0, 17) + "..." :
+                errorText = errorState.message.length > 27 ?
+                    errorState.message.substring(0, 27) + "..." :
                     errorState.message;
             }
 
             node.status({
-                fill: "yellow",
+                fill: "red",
                 shape: "ring",
                 text: errorText
             });
@@ -279,11 +279,10 @@ module.exports = function (RED) {
                 updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                 done();
             }).catch(error => {
-                msg.influx_error = {
-                    errorMessage: error
-                };
-                // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
-                updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+                // LucaT: usa createInfluxError per standardizzare l'errore
+                msg.influx_error = createInfluxError(error);
+                // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
                 done(error);
             });
         } catch (error) {
@@ -427,7 +426,7 @@ module.exports = function (RED) {
                     // Alla fine dell'operazione, ripristina lo status
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
-                }).catch(function (err) {
+                }).catch(error => {
                     // LucaT: usa createInfluxError per standardizzare l'errore
                     msg.influx_error = createInfluxError(error);
                     // LucaT: Mostra errore temporaneamente poi torna a "ready"
@@ -522,11 +521,11 @@ module.exports = function (RED) {
 
                 client.writePoints(msg.payload, writeOptions).then(() => {
                     done();
-                }).catch(function (err) {
+                }).catch(error => {
                     // LucaT: usa createInfluxError per standardizzare l'errore
                     msg.influx_error = createInfluxError(error);
                     // LucaT: Mostra errore temporaneamente poi torna a "ready"
-                    showTemporaryError(node, node.influxdbConfig, error, node.readCount || node.writeCount);
+                    showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
                     done(error);
                 });
             });
@@ -569,9 +568,10 @@ module.exports = function (RED) {
                 client.flush(true).then(() => {
                     done();
                 }).catch(error => {
-                    msg.influx_error = {
-                        errorMessage: error
-                    };
+                    // LucaT: usa createInfluxError per standardizzare l'errore
+                    msg.influx_error = createInfluxError(error);
+                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                    showTemporaryError(node, node.influxdbConfig, error, node.readCount || node.writeCount);
                     done(error);
                 });
             });
@@ -659,7 +659,7 @@ module.exports = function (RED) {
                     // LucaT: Ripristina lo status a "ready" dopo la lettura
                     updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     done();
-                }).catch(function (err) {
+                }).catch(error => {
                     // LucaT: usa createInfluxError per standardizzare l'errore
                     msg.influx_error = createInfluxError(error);
                     // LucaT: Mostra errore temporaneamente poi torna a "ready"
@@ -705,11 +705,10 @@ module.exports = function (RED) {
                         output.push(o);
                     },
                     error(error) {
-                        msg.influx_error = {
-                            errorMessage: error
-                        };
-                        // LucaT: Ripristina lo status a "ready" dopo l'errore
-                        updateNodeStatus(node, node.influxdbConfig);
+                        // LucaT: usa createInfluxError per standardizzare l'errore
+                        msg.influx_error = createInfluxError(error);
+                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
+                        showTemporaryError(node, node.influxdbConfig, error, node.readCount);
                         done(error);
                     },
                     complete() {
