@@ -10,6 +10,29 @@ module.exports = function (RED) {
     const VERSION_20 = '2.0';
 
     /**
+     * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled
+     */
+    function updateNodeStatus(node, client) {
+        if (!client || !isConnectionEnabled(client.dynamicEnabled)) {
+            // Nodo disabilitato - status rosso con icona
+            node.status({
+                fill: "red",
+                shape: "ring",
+                text: "disabled"
+            });
+            return false; // Connessione disabilitata
+        } else {
+            // Nodo abilitato - status verde
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: "ready"
+            });
+            return true; // Connessione abilitata
+        }
+    }
+
+    /**
      * LucaT - Helper function to check if connection is enabled based on dynamicEnabled value
      */
     function isConnectionEnabled(dynamicEnabled) {
@@ -226,6 +249,9 @@ module.exports = function (RED) {
         this.org = n.org;
         this.bucket = n.bucket;
 
+        // LucaT: Controlla e aggiorna status all'inizializzazione
+        var connectionEnabled = updateNodeStatus(this, this.influxdbConfig);
+
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
@@ -239,11 +265,19 @@ module.exports = function (RED) {
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                if (!connectionEnabled) {
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+                // LucaT: Aggiorna status a "writing" durante l'operazione
+                node.status({
+                    fill: "blue",
+                    shape: "dot",
+                    text: "writing"
+                });
+
                 var measurement;
                 var writeOptions = {};
 
@@ -320,17 +354,19 @@ module.exports = function (RED) {
                     }
                     points.push(point);
                 }
-
                 client.writePoints(points, writeOptions).then(() => {
+                    // Alla fine dell'operazione, ripristina lo status
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                 }).catch(function (err) {
                     msg.influx_error = {
                         statusCode: err.res ? err.res.statusCode : 503
                     }
+                    updateNodeStatus(node, node.influxdbConfig);
                     done(err);
                 });
             });
-        } else if (version === VERSION_18_FLUX || version === VERSION_20) {
+        } else if (version === VERSION_18_FLUX || version === VERSION_20) {            
             let bucket = this.bucket;
             if (version === VERSION_18_FLUX) {
                 let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
@@ -344,13 +380,24 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Connessione disabilitata - ignora silenziosamente l'operazione
+                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
+                    updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+                // LucaT: Aggiorna status a "writing" durante l'operazione
+                node.status({
+                    fill: "blue",
+                    shape: "dot", 
+                    text: "writing"
+                });                
                 writePoints(msg, node, done);
             });
         }
+        // LucaT: Ascolta le modifiche alla configurazione
+        this.on('close', function () {
+            node.status({});
+        });
     }
 
     RED.nodes.registerType("influxdb out", InfluxOutNode);
@@ -390,7 +437,7 @@ module.exports = function (RED) {
                     // Connessione disabilitata - ignora silenziosamente l'operazione
                     done();
                     return;
-                }                
+                }
                 var writeOptions = {};
                 var precision = msg.hasOwnProperty('precision') ? msg.precision : node.precision;
                 var retentionPolicy = msg.hasOwnProperty('retentionPolicy') ? msg.retentionPolicy : node.retentionPolicy;
@@ -491,7 +538,7 @@ module.exports = function (RED) {
                     // Connessione disabilitata - ignora silenziosamente l'operazione
                     done();
                     return;
-                }                
+                }
                 var query;
                 var rawOutput;
                 var queryOptions = {};
@@ -544,7 +591,7 @@ module.exports = function (RED) {
                     // Connessione disabilitata - ignora silenziosamente l'operazione
                     done();
                     return;
-                }                
+                }
                 var query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
                     return done(RED._("influxdb.errors.noquery"));
