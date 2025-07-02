@@ -121,6 +121,48 @@ module.exports = function (RED) {
         return dynamicPassword18.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
     }
 
+
+    /**
+     * LucaT: Helper functions per gestire gli override dei parametri Version 1.0
+     * NOTA: Queste funzioni sono DA TESTARE con un'istanza InfluxDB 1.0
+     */
+    function getDynamicHostname10(dynamicHostname10) {
+        if (!dynamicHostname10 || dynamicHostname10.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicHostname10.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicPort10(dynamicPort10) {
+        if (!dynamicPort10 || dynamicPort10.trim() === "") {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicPort10.trim();
+        // Verifica che sia un numero valido
+        const portValue = parseInt(trimmedValue);
+        if (!isNaN(portValue) && portValue > 0 && portValue <= 65535) {
+            return portValue; // Restituisce come numero per InfluxDB 1.0
+        }
+        return null; // Non intervenire se non è un numero valido
+    }
+    function getDynamicDatabase10(dynamicDatabase10) {
+        if (!dynamicDatabase10 || dynamicDatabase10.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicDatabase10.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicUsername10(dynamicUsername10) {
+        if (!dynamicUsername10 || dynamicUsername10.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicUsername10.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicPassword10(dynamicPassword10) {
+        if (!dynamicPassword10 || dynamicPassword10.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicPassword10.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
+    }
+
     /**
      * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled e gestione errori
      */
@@ -227,8 +269,10 @@ module.exports = function (RED) {
         this.database = n.database;
         this.name = n.name;
 
-        // LucaT: Aggiunto supporto per dynamicEnabled
+        // LucaT: Aggiunto supporto per valori dinamici
         this.dynamicEnabled = n.dynamicEnabled;
+        this.dynamicOrg20 = n.dynamicOrg20;
+        this.dynamicBucket20 = n.dynamicBucket20;
 
         var clientOptions = null;
 
@@ -245,7 +289,37 @@ module.exports = function (RED) {
             RED.log.info(`InfluxDb dynamic override version changed from [${originalVersion}] to [${n.influxdbVersion}]`);
         }
         if (n.influxdbVersion === VERSION_1X) {
-            // TODO: LucaT - Aggiungere supporto per dynamicEnabled
+            // LucaT: Gestione override parametri specifici per Version 1.0 - DA TESTARE
+            // Override Hostname per 1.0
+            const dynamicHostname10Override = getDynamicHostname10(n.dynamicHostname10);
+            if (dynamicHostname10Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Hostname (1.0) changed from [${this.hostname}] to [${dynamicHostname10Override}]`);
+                this.hostname = dynamicHostname10Override;
+            }
+            // Override Port per 1.0
+            const dynamicPort10Override = getDynamicPort10(n.dynamicPort10);
+            if (dynamicPort10Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Port (1.0) changed from [${this.port}] to [${dynamicPort10Override}]`);
+                this.port = dynamicPort10Override;
+            }
+            // Override Database per 1.0
+            const dynamicDatabase10Override = getDynamicDatabase10(n.dynamicDatabase10);
+            if (dynamicDatabase10Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Database (1.0) changed from [${this.database}] to [${dynamicDatabase10Override}]`);
+                this.database = dynamicDatabase10Override;
+            }
+            // Override Username per 1.0
+            const dynamicUsername10Override = getDynamicUsername10(n.dynamicUsername10);
+            if (dynamicUsername10Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Username (1.0) changed (hidden for security)`);
+                // Lo username verrà gestito nella sezione credentials più avanti
+            }
+            // Override Password per 1.0
+            const dynamicPassword10Override = getDynamicPassword10(n.dynamicPassword10);
+            if (dynamicPassword10Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Password (1.0) changed (hidden for security)`);
+                // La password verrà gestita nella sezione credentials più avanti
+            }
         } else if (n.influxdbVersion === VERSION_18_FLUX) {
             // LucaT: Gestione override parametri specifici per Version 1.8-flux
             // Override URL per 1.8-flux
@@ -323,6 +397,18 @@ module.exports = function (RED) {
                     tlsNode.addTLSOptions(this.hostOptions);
                 }
             }
+
+            // LucaT: DA TESTARE (INIZIO) Gestione override delle credenziali per VERSION_1X
+            let username = this.credentials.username;
+            let password = this.credentials.password;
+            const dynamicUsername10Override = getDynamicUsername10(n.dynamicUsername10);
+            if (dynamicUsername10Override !== null) {
+                username = dynamicUsername10Override;
+            }
+            const dynamicPassword10Override = getDynamicPassword10(n.dynamicPassword10);
+            if (dynamicPassword10Override !== null) {
+                password = dynamicPassword10Override;
+            }
             this.client = new Influx.InfluxDB({
                 hosts: [{
                     host: this.hostname,
@@ -331,9 +417,11 @@ module.exports = function (RED) {
                     options: this.hostOptions
                 }],
                 database: this.database,
-                username: this.credentials.username,
-                password: this.credentials.password
+                username: username,
+                password: password 
             });
+            // LucaT: DA TESTARE (FINE) Gestione override delle credenziali per VERSION_1X
+            
         } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
             // LucaT: Gestione override delle credenziali prottette
@@ -658,17 +746,21 @@ module.exports = function (RED) {
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            // LucaT: Aggiunto supporto per il bucket dinamico
-            let bucket = this.influxdbConfig.getEffectiveBucket(this.bucket);
+            // LucaT: Aggiunto supporto per il bucket dinamico (INIZIO)
+            let bucket;
+            let org;
             if (version === VERSION_18_FLUX) {
+                // Per 1.8-flux, il bucket è sempre database/retention
                 let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
                 bucket = `${this.database}/${retentionPolicy}`;
+                org = '';
+            } else {
+                // Per 2.0, usa i valori dinamici se disponibili
+                bucket = this.influxdbConfig.getEffectiveBucket(this.bucket);
+                org = this.influxdbConfig.getEffectiveOrg(this.org);
             }
-            // LucaT: Aggiungi supporto per org dinamico
-            let org = version === VERSION_18_FLUX ? '' : this.influxdbConfig.getEffectiveOrg(this.org);
-
             this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
-
+            // LucaT: Aggiunto supporto per il bucket dinamico (FINE)
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
