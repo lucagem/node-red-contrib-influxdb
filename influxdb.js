@@ -292,18 +292,6 @@ module.exports = function (RED) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
-            // Override Organization per 2.0
-            const dynamicOrg20Override = getDynamicOrg20(n.dynamicOrg20);
-            if (dynamicOrg20Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Organization changed from [${n.org}] to [${dynamicOrg20Override}]`);
-                n.org = dynamicOrg20Override;
-            }
-            // Override Bucket per 2.0
-            const dynamicBucket20Override = getDynamicBucket20(n.dynamicBucket20);
-            if (dynamicBucket20Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Bucket changed from [${n.bucket}] to [${dynamicBucket20Override}]`);
-                n.bucket = dynamicBucket20Override;
-            }
         }
         // Override Timeout
         const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
@@ -380,6 +368,30 @@ module.exports = function (RED) {
         // LucaT: Aggiuto metodo helper per verificare se la connessione è abilitata
         this.isConnectionEnabled = function () {
             return isConnectionEnabled(this.dynamicEnabled);
+        };
+
+        // LucaT: Metodi helper per override di Organization
+        this.getEffectiveOrg = function (originalOrg) {
+            if (this.influxdbVersion === VERSION_20) {
+                const dynamicOrg20Override = getDynamicOrg20(this.dynamicOrg20);
+                if (dynamicOrg20Override !== null) {
+                    RED.log.info(`InfluxDb dynamic override Organization changed from [${originalOrg}] to [${dynamicOrg20Override}]`);
+                    return dynamicOrg20Override;
+                }
+            }
+            return originalOrg;
+        };
+
+        // LucaT: Metodi helper per override di Bucket
+        this.getEffectiveBucket = function (originalBucket) {
+            if (this.influxdbVersion === VERSION_20) {
+                const dynamicBucket20Override = getDynamicBucket20(this.dynamicBucket20);
+                if (dynamicBucket20Override !== null) {
+                    RED.log.info(`InfluxDb dynamic override Bucket changed from [${originalBucket}] to [${dynamicBucket20Override}]`);
+                    return dynamicBucket20Override;
+                }
+            }
+            return originalBucket;
         };
         this.influxdbVersion = n.influxdbVersion;
     }
@@ -646,12 +658,14 @@ module.exports = function (RED) {
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            let bucket = this.bucket;
+            // LucaT: Aggiunto supporto per il bucket dinamico
+            let bucket = this.influxdbConfig.getEffectiveBucket(this.bucket);
             if (version === VERSION_18_FLUX) {
                 let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
                 bucket = `${this.database}/${retentionPolicy}`;
             }
-            let org = version === VERSION_18_FLUX ? '' : this.org;
+            // LucaT: Aggiungi supporto per org dinamico
+            let org = version === VERSION_18_FLUX ? '' : this.influxdbConfig.getEffectiveOrg(this.org);
 
             this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
 
