@@ -1068,7 +1068,7 @@ module.exports = function (RED) {
             });
 
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            let org = version === VERSION_20 ? this.org : ''
+            let org = version === VERSION_20 ? this.influxdbConfig.getEffectiveOrg(this.org) : ''
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
 
