@@ -98,17 +98,17 @@ module.exports = function (RED) {
      * LucaT: Helper functions per gestire gli override dei parametri Version 1.0
      * NOTA: Queste funzioni sono DA TESTARE con un'istanza InfluxDB 1.0
      */
-    function getDynamicHostname10(dynamicHostname10) {
-        if (!dynamicHostname10 || dynamicHostname10.trim() === "") {
+    function getDynamicHostname1x(dynamicHostname1x) {
+        if (!dynamicHostname1x || dynamicHostname1x.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicHostname10.trim(); // Accetta qualsiasi valore non vuoto
+        return dynamicHostname1x.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicPort10(dynamicPort10) {
-        if (!dynamicPort10 || dynamicPort10.trim() === "") {
+    function getDynamicPort1x(dynamicPort1x) {
+        if (!dynamicPort1x || dynamicPort1x.trim() === "") {
             return null; // Non intervenire
         }
-        const trimmedValue = dynamicPort10.trim();
+        const trimmedValue = dynamicPort1x.trim();
         // Verifica che sia un numero valido
         const portValue = parseInt(trimmedValue);
         if (!isNaN(portValue) && portValue > 0 && portValue <= 65535) {
@@ -261,16 +261,16 @@ module.exports = function (RED) {
         if (n.influxdbVersion === VERSION_1X) {
             // LucaT: Gestione override parametri specifici per Version 1.0 - DA TESTARE
             // Override Hostname per 1.0
-            const dynamicHostname10Override = getDynamicHostname10(n.dynamicHostname10);
-            if (dynamicHostname10Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Hostname (1.0) changed from [${this.hostname}] to [${dynamicHostname10Override}]`);
-                this.hostname = dynamicHostname10Override;
+            const dynamicHostname1xOverride = getDynamicHostname1x(n.dynamicHostname1x);
+            if (dynamicHostname1xOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Hostname (1.0) changed from [${this.hostname}] to [${dynamicHostname1xOverride}]`);
+                this.hostname = dynamicHostname1xOverride;
             }
             // Override Port per 1.0
-            const dynamicPort10Override = getDynamicPort10(n.dynamicPort10);
-            if (dynamicPort10Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Port (1.0) changed from [${this.port}] to [${dynamicPort10Override}]`);
-                this.port = dynamicPort10Override;
+            const dynamicPort1xOverride = getDynamicPort1x(n.dynamicPort1x);
+            if (dynamicPort1xOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Port (1.0) changed from [${this.port}] to [${dynamicPort1xOverride}]`);
+                this.port = dynamicPort1xOverride;
             }
             // Override Database per 1.0
             const dynamicDatabase10Override = getDynamicDatabase10(n.dynamicDatabase10);

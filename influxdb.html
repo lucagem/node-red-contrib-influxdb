@@ -91,43 +91,43 @@
                 When set, this will override the version selected in the Configuration tab. 
                 Use environment variables like <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_VERSION}</code> for dynamic configuration.
             </div>        
-            <!-- InfluxDb 1.0 Section -->
+            <!-- InfluxDb 1.x Section -->
             <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 1.0 Configuration</h4>            
+            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 1.x Configuration</h4>            
             <div class="form-row">
-                <label for="node-config-input-dynamicHostname10"><i class="fa fa-server"></i> Hostname (1.0)</label>
-                <input type="text" id="node-config-input-dynamicHostname10" placeholder="10.0.1.253 | ${IDB_HOSTNAME_10}">
+                <label for="node-config-input-dynamicHostname1x"><i class="fa fa-server"></i> Hostname (1.x)</label>
+                <input type="text" id="node-config-input-dynamicHostname1x" placeholder="10.0.1.253 | ${IDB_HOSTNAME_1X}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Hostname</strong> for InfluxDb 1.0 version. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_HOSTNAME_10}</code> for environment variable.
+                <strong>Hostname</strong> for InfluxDb 1.x version. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_HOSTNAME_1X}</code> for environment variable.
             </div>            
             <div class="form-row">
-                <label for="node-config-input-dynamicPort10"><i class="fa fa-plug"></i> Port (1.0)</label>
-                <input type="text" id="node-config-input-dynamicPort10" placeholder="8086 | ${IDB_PORT_10}">
+                <label for="node-config-input-dynamicPort1x"><i class="fa fa-plug"></i> Port (1.x)</label>
+                <input type="text" id="node-config-input-dynamicPort1x" placeholder="8086 | ${IDB_PORT_1X}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Port</strong> for InfluxDb 1.0 version. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">8086</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PORT_10}</code> for environment variable.
+                <strong>Port</strong> for InfluxDb 1.x version. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">8086</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PORT_1X}</code> for environment variable.
             </div>            
             <div class="form-row">
-                <label for="node-config-input-dynamicDatabase10"><i class="fa fa-database"></i> Database (1.0)</label>
-                <input type="text" id="node-config-input-dynamicDatabase10" placeholder="db0 | ${IDB_DATABASE_10}">
+                <label for="node-config-input-dynamicDatabase10"><i class="fa fa-database"></i> Database (1.x)</label>
+                <input type="text" id="node-config-input-dynamicDatabase10" placeholder="db0 | ${IDB_DATABASE_1X}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Database name</strong> for InfluxDb 1.0. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_DATABASE_10}</code> for environment variable.
+                <strong>Database name</strong> for InfluxDb 1.x. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_DATABASE_1X}</code> for environment variable.
             </div>            
             <div class="form-row">
-                <label for="node-config-input-dynamicUsername10"><i class="fa fa-user"></i> Username (1.0)</label>
-                <input type="text" id="node-config-input-dynamicUsername10" placeholder="admin | ${IDB_USERNAME_10}">
+                <label for="node-config-input-dynamicUsername10"><i class="fa fa-user"></i> Username (1.x)</label>
+                <input type="text" id="node-config-input-dynamicUsername10" placeholder="admin | ${IDB_USERNAME_1X}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Username</strong> for InfluxDb 1.0 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME_10}</code> for environment variable.
+                <strong>Username</strong> for InfluxDb 1.x authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME_1X}</code> for environment variable.
             </div>            
             <div class="form-row">
-                <label for="node-config-input-dynamicPassword10"><i class="fa fa-lock"></i> Password (1.0)</label>
-                <input type="text" id="node-config-input-dynamicPassword10" placeholder="${IDB_PASSWORD_10}">
+                <label for="node-config-input-dynamicPassword10"><i class="fa fa-lock"></i> Password (1.x)</label>
+                <input type="text" id="node-config-input-dynamicPassword10" placeholder="${IDB_PASSWORD_1X}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Password</strong> for InfluxDb 1.0 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD_10}</code> for environment variable.
+                <strong>Password</strong> for InfluxDb 1.x authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD_1X}</code> for environment variable.
             </div>                       
             <!-- InfluxDb 1.8 Section -->
             <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
@@ -178,7 +178,7 @@
                 <strong>Connection timeout</strong> in seconds. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">10</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TIMEOUT_20}</code> for environment variable.
             </div>            
             <div class="form-row">
-                <label for="node-config-input-dynamicVerifyCertificate20"><i class="fa fa-shield"></i> Reject Unauthorized</label>
+                <label for="node-config-input-dynamicVerifyCertificate20"><i class="fa fa-shield"></i> Verify server certificate</label>
                 <input type="text" id="node-config-input-dynamicVerifyCertificate20" placeholder="true | false | ${IDB_VERIFY_CERTIFICATE_20}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -305,7 +305,7 @@
                     return value.length > 0;
                 }
             },
-            dynamicHostname10: {
+            dynamicHostname1x: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -316,7 +316,7 @@
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
             },
-            dynamicPort10: {
+            dynamicPort1x: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -428,9 +428,9 @@
             // Popola i campi con i valori salvati
             $("#node-config-input-dynamicEnabled").val(this.dynamicEnabled || "");
             $("#node-config-input-dynamicVersion").val(this.dynamicVersion || "");
-            // Sezione 1.0
-            $("#node-config-input-dynamicHostname10").val(this.dynamicHostname10 || "");
-            $("#node-config-input-dynamicPort10").val(this.dynamicPort10 || "");
+            // Sezione 1.x
+            $("#node-config-input-dynamicHostname1x").val(this.dynamicHostname1x || "");
+            $("#node-config-input-dynamicPort1x").val(this.dynamicPort1x || "");
             $("#node-config-input-dynamicDatabase10").val(this.dynamicDatabase10 || "");
             $("#node-config-input-dynamicUsername10").val(this.dynamicUsername10 || "");
             $("#node-config-input-dynamicPassword10").val(this.dynamicPassword10 || "");
@@ -743,9 +743,9 @@
                 // ------------ LucaT: Save Dynamic Properties values (START)
                 this.dynamicEnabled = $("#node-config-input-dynamicEnabled").val();
                 this.dynamicVersion = $("#node-config-input-dynamicVersion").val();
-                // Sezione 1.0
-                this.dynamicHostname10 = $("#node-config-input-dynamicHostname10").val();
-                this.dynamicPort10 = $("#node-config-input-dynamicPort10").val();
+                // Sezione 1.x
+                this.dynamicHostname1x = $("#node-config-input-dynamicHostname1x").val();
+                this.dynamicPort1x = $("#node-config-input-dynamicPort1x").val();
                 this.dynamicDatabase10 = $("#node-config-input-dynamicDatabase10").val();
                 this.dynamicUsername10 = $("#node-config-input-dynamicUsername10").val();
                 this.dynamicPassword10 = $("#node-config-input-dynamicPassword10").val();
