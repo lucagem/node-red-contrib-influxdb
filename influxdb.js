@@ -34,6 +34,50 @@ module.exports = function (RED) {
     }
 
     /**
+     * LucaT: Helper functions per gestire gli override dei parametri Version 2.0
+     */
+    function getDynamicUrl20(dynamicUrl20) {
+        if (!dynamicUrl20 || dynamicUrl20.trim() === "") {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicUrl20.trim();
+        // Verifica che sia un URL valido
+        if (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) {
+            return trimmedValue;
+        }
+        return null; // Non intervenire se non è un URL valido
+    }
+    function getDynamicToken20(dynamicToken20) {
+        if (!dynamicToken20 || dynamicToken20.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicToken20.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicTimeout(dynamicTimeout) {
+        if (!dynamicTimeout || dynamicTimeout.trim() === "") {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicTimeout.trim();
+        // Verifica che sia un numero valido
+        const timeoutValue = parseInt(trimmedValue);
+        if (!isNaN(timeoutValue) && timeoutValue > 0) {
+            return trimmedValue;
+        }
+        return null; // Non intervenire se non è un numero valido
+    }
+    function getDynamicRejectUnauthorized(dynamicRejectUnauthorized) {
+        if (!dynamicRejectUnauthorized || dynamicRejectUnauthorized.trim() === "") {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicRejectUnauthorized.trim().toLowerCase();
+        // Verifica che sia un valore booleano valido
+        if (["true", "false", "0", "1"].includes(trimmedValue)) {
+            return trimmedValue === "true" || trimmedValue === "1" ? true : false;
+        }
+        return null; // Non intervenire se non è un valore booleano valido
+    }
+
+    /**
      * LucaT - Helper function per aggiornare lo status del nodo basato su dynamicEnabled e gestione errori
      */
     function updateNodeStatus(node, client, operationCount, errorState) {
@@ -148,7 +192,7 @@ module.exports = function (RED) {
             n.influxdbVersion = VERSION_1X;
         }
 
-        // LucaT: Gestione version override - sostituisce il valore originale se necessario
+        // LucaT: Gestione version override (INIZIO) - sostituisce il valore originale se necessario
         const dynamicVersionOverride = getDynamicVersion(n.dynamicVersion);
         if (dynamicVersionOverride !== null) {
             const originalVersion = n.influxdbVersion;
@@ -156,6 +200,38 @@ module.exports = function (RED) {
             // Log del cambiamento
             RED.log.info(`InfluxDb dynamic override version changed from [${originalVersion}] to [${n.influxdbVersion}]`);
         }
+        if (n.influxdbVersion === VERSION_1X) {
+            // TODO: LucaT - Aggiungere supporto per dynamicEnabled
+        } else if (n.influxdbVersion === VERSION_18_FLUX) {
+            // TODO: LucaT - Aggiungere supporto per dynamicEnabled
+        } else if (n.influxdbVersion === VERSION_20) {
+            // LucaT: Gestione override parametri specifici per Version 2.0
+            // Override URL
+            const dynamicUrlOverride = getDynamicUrl20(n.dynamicUrl20);
+            if (dynamicUrlOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override URL changed from [${n.url}] to [${dynamicUrlOverride}]`);
+                n.url = dynamicUrlOverride;
+            }
+            // Override Token (viene gestito nelle credentials)
+            const dynamicTokenOverride = getDynamicToken20(n.dynamicToken20);
+            if (dynamicTokenOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
+                // Il token verrà gestito nella sezione credentials più avanti
+            }
+            // Override Timeout
+            const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
+            if (dynamicTimeoutOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
+                n.timeout = dynamicTimeoutOverride;
+            }
+            // Override Reject Unauthorized
+            const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
+            if (dynamicRejectUnauthorizedOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override RejectUnauthorized changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
+                n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
+            }
+        }
+        // LucaT: Gestione version override (FINE)
 
         if (n.influxdbVersion === VERSION_1X) {
             this.usetls = n.usetls;
@@ -186,10 +262,15 @@ module.exports = function (RED) {
             });
         } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
-
-            const token = n.influxdbVersion === VERSION_18_FLUX ?
-                `${this.credentials.username}:${this.credentials.password}` :
-                this.credentials.token;
+            // LucaT: Gestione override delle credenziali prottette
+            let token;
+            if (n.influxdbVersion === VERSION_18_FLUX) {
+                token = `${this.credentials.username}:${this.credentials.password}`;
+            } else {
+                // VERSION_20 - controlla se c'è un override del token
+                const dynamicTokenOverride = getDynamicToken20(n.dynamicToken20);
+                token = dynamicTokenOverride !== null ? dynamicTokenOverride : this.credentials.token;
+            }
 
             clientOptions = {
                 url: n.url,

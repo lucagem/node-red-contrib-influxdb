@@ -16,6 +16,10 @@
                 "DEBUG": "influx*",
                 "IDB_ENABLED": "false",
                 "IDB_VERSION": "2",
+                "IDB_URL": "http://10.0.1.253:8086",
+                "IDB_ORG": "GEM",
+                "IDB_BUCKET": "db0",
+                "IDB_TOKEN": "j8hLNwtnJCowYISRVut3eM5rOqThUy2mkBeK3KRYxtc2yoW2i9L554ZprPr6Y8YUtATFHAvEUs81a5YtNC9zhQ=="
             },
             "skipFiles": [
                 "<node_internals>/**"
