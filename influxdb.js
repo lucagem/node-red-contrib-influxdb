@@ -53,45 +53,17 @@ module.exports = function (RED) {
         }
         return dynamicToken20.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicOrg20(dynamicOrg20) {
-        if (!dynamicOrg20 || dynamicOrg20.trim() === "") {
+    function getDynamicTimeout20(dynamicTimeout20) {
+        if (!dynamicTimeout20 || dynamicTimeout20.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicOrg20.trim(); // Accetta qualsiasi valore non vuoto
-    }
-
-    function getDynamicBucket20(dynamicBucket20) {
-        if (!dynamicBucket20 || dynamicBucket20.trim() === "") {
-            return null; // Non intervenire
-        }
-        return dynamicBucket20.trim(); // Accetta qualsiasi valore non vuoto
-    }
-
-    /**
-     * LucaT: Helper functions per gestire gli override dei parametri "Comuni"
-     */
-    function getDynamicTimeout(dynamicTimeout) {
-        if (!dynamicTimeout || dynamicTimeout.trim() === "") {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicTimeout.trim();
+        const trimmedValue = dynamicTimeout20.trim();
         // Verifica che sia un numero valido
         const timeoutValue = parseInt(trimmedValue);
         if (!isNaN(timeoutValue) && timeoutValue > 0) {
             return trimmedValue;
         }
         return null; // Non intervenire se non è un numero valido
-    }
-    function getDynamicRejectUnauthorized(dynamicRejectUnauthorized) {
-        if (!dynamicRejectUnauthorized || dynamicRejectUnauthorized.trim() === "") {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicRejectUnauthorized.trim().toLowerCase();
-        // Verifica che sia un valore booleano valido
-        if (["true", "false", "0", "1"].includes(trimmedValue)) {
-            return trimmedValue === "true" || trimmedValue === "1" ? true : false;
-        }
-        return null; // Non intervenire se non è un valore booleano valido
     }
 
     /**
@@ -271,8 +243,6 @@ module.exports = function (RED) {
 
         // LucaT: Aggiunto supporto per valori dinamici
         this.dynamicEnabled = n.dynamicEnabled;
-        this.dynamicOrg20 = n.dynamicOrg20;
-        this.dynamicBucket20 = n.dynamicBucket20;
 
         var clientOptions = null;
 
@@ -340,18 +310,6 @@ module.exports = function (RED) {
                 RED.log.info(`InfluxDb dynamic override Password (1.8-flux) changed (hidden for security)`);
                 // La password verrà gestita nella sezione credentials più avanti
             }
-            // Override Timeout per 1.8-flux (riusa la stessa funzione)
-            const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
-            if (dynamicTimeoutOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Timeout (1.8-flux) changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
-                n.timeout = dynamicTimeoutOverride;
-            }
-            // Override Reject Unauthorized per 1.8-flux (riusa la stessa funzione)
-            const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
-            if (dynamicRejectUnauthorizedOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override RejectUnauthorized (1.8-flux) changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
-                n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
-            }
         } else if (n.influxdbVersion === VERSION_20) {
             // LucaT: Gestione override parametri specifici per Version 2.0
             // Override URL
@@ -366,18 +324,12 @@ module.exports = function (RED) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
-        }
-        // Override Timeout
-        const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
-        if (dynamicTimeoutOverride !== null) {
-            RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
-            n.timeout = dynamicTimeoutOverride;
-        }
-        // Override Reject Unauthorized
-        const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
-        if (dynamicRejectUnauthorizedOverride !== null) {
-            RED.log.info(`InfluxDb dynamic override RejectUnauthorized changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
-            n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
+            // Override Timeout
+            const dynamicTimeout20Override = getDynamicTimeout20(n.dynamicTimeout20);
+            if (dynamicTimeout20Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeout20Override}]`);
+                n.timeout = dynamicTimeout20Override;
+            }
         }
         // LucaT: Gestione version override (FINE)
 
@@ -422,7 +374,7 @@ module.exports = function (RED) {
             });
             // LucaT: DA TESTARE (FINE) Gestione override delle credenziali per VERSION_1X
 
-        } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
+        } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {            
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
             // LucaT: Gestione override delle credenziali prottette
             let token;
@@ -458,37 +410,8 @@ module.exports = function (RED) {
             return isConnectionEnabled(this.dynamicEnabled);
         };
 
-        // LucaT: Metodi helper per override di Organization
-        this.getEffectiveOrg = function (originalOrg) {
-            if (this.influxdbVersion === VERSION_20) {
-                const dynamicOrg20Override = getDynamicOrg20(this.dynamicOrg20);
-                if (dynamicOrg20Override !== null) {
-                    RED.log.info(`InfluxDb dynamic override Organization changed from [${originalOrg}] to [${dynamicOrg20Override}]`);
-                    return dynamicOrg20Override;
-                }
-            }
-            return originalOrg;
-        };
-
-        // LucaT: Metodi helper per override di Bucket
-        this.getEffectiveBucket = function (originalBucket) {
-            if (this.influxdbVersion === VERSION_20) {
-                const dynamicBucket20Override = getDynamicBucket20(this.dynamicBucket20);
-                if (dynamicBucket20Override !== null) {
-                    RED.log.info(`InfluxDb dynamic override Bucket changed from [${originalBucket}] to [${dynamicBucket20Override}]`);
-                    return dynamicBucket20Override;
-                }
-            }
-            return originalBucket;
-        };
         this.influxdbVersion = n.influxdbVersion;
     }
-
-    /*
-    InfluxConfigNode.prototype.toString = function () {
-        return this.name ? this.name : this.hostname + ":" + this.port + "/" + this.database;
-    };
-    */
 
     RED.nodes.registerType("influxdb", InfluxConfigNode, {
         credentials: {
@@ -764,8 +687,8 @@ module.exports = function (RED) {
                 org = '';
             } else {
                 // Per 2.0, usa i valori dinamici se disponibili
-                bucket = this.influxdbConfig.getEffectiveBucket(this.bucket);
-                org = this.influxdbConfig.getEffectiveOrg(this.org);
+                bucket = this.bucket;
+                org = this.org;
             }
             this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
             // LucaT: Aggiunto supporto per il bucket dinamico (FINE)
@@ -908,8 +831,8 @@ module.exports = function (RED) {
                     org = '';
                 } else {
                     // Per 2.0, usa i valori dinamici se disponibili - RIVALUTA AD OGNI MESSAGGIO
-                    bucket = node.influxdbConfig.getEffectiveBucket(node.bucket);
-                    org = node.influxdbConfig.getEffectiveOrg(node.org);
+                    bucket = node.bucket;
+                    org = node.org;
                 }
 
                 // LucaT: Crea un nuovo writeApi ad ogni input con i parametri aggiornati
@@ -1068,7 +991,7 @@ module.exports = function (RED) {
             });
 
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            let org = version === VERSION_20 ? this.influxdbConfig.getEffectiveOrg(this.org) : ''
+            let org = version === VERSION_20 ? this.org : ''
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
 

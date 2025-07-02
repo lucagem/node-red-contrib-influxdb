@@ -70,10 +70,10 @@
                 "DEBUG": "influx*",
                 "IDB_ENABLED": "true",
                 "IDB_VERSION": "2",
-                "IDB_URL": "http://10.0.0.114:8087",
-                "IDB_TOKEN": "my-super-secret-auth-token-123456789",
-                "IDB_ORG": "my-org",
-                "IDB_BUCKET": "testdb"
+                "IDB_URL_20": "http://10.0.0.114:8087",
+                "IDB_TOKEN_20": "my-super-secret-auth-token-123456789",
+                "IDB_TIMEOUT_20": "8",
+                "IDB_VERIFY_CERTIFICATE_20": "true",
             },
             "skipFiles": [
                 "<node_internals>/**"
