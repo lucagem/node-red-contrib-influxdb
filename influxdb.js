@@ -53,6 +53,23 @@ module.exports = function (RED) {
         }
         return dynamicToken20.trim(); // Accetta qualsiasi valore non vuoto
     }
+    function getDynamicOrg20(dynamicOrg20) {
+        if (!dynamicOrg20 || dynamicOrg20.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicOrg20.trim(); // Accetta qualsiasi valore non vuoto
+    }
+
+    function getDynamicBucket20(dynamicBucket20) {
+        if (!dynamicBucket20 || dynamicBucket20.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicBucket20.trim(); // Accetta qualsiasi valore non vuoto
+    }
+
+    /**
+     * LucaT: Helper functions per gestire gli override dei parametri "Comuni"
+     */
     function getDynamicTimeout(dynamicTimeout) {
         if (!dynamicTimeout || dynamicTimeout.trim() === "") {
             return null; // Non intervenire
@@ -75,6 +92,33 @@ module.exports = function (RED) {
             return trimmedValue === "true" || trimmedValue === "1" ? true : false;
         }
         return null; // Non intervenire se non è un valore booleano valido
+    }
+
+    /**
+     * LucaT: Helper functions per gestire gli override dei parametri Version 1.8-flux  
+     */
+    function getDynamicUrl18Flux(dynamicUrl18Flux) {
+        if (!dynamicUrl18Flux || dynamicUrl18Flux.trim() === "") {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicUrl18Flux.trim();
+        // Verifica che sia un URL valido
+        if (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) {
+            return trimmedValue;
+        }
+        return null; // Non intervenire se non è un URL valido
+    }
+    function getDynamicUsername18(dynamicUsername18) {
+        if (!dynamicUsername18 || dynamicUsername18.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicUsername18.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicPassword18(dynamicPassword18) {
+        if (!dynamicPassword18 || dynamicPassword18.trim() === "") {
+            return null; // Non intervenire
+        }
+        return dynamicPassword18.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
     }
 
     /**
@@ -203,7 +247,37 @@ module.exports = function (RED) {
         if (n.influxdbVersion === VERSION_1X) {
             // TODO: LucaT - Aggiungere supporto per dynamicEnabled
         } else if (n.influxdbVersion === VERSION_18_FLUX) {
-            // TODO: LucaT - Aggiungere supporto per dynamicEnabled
+            // LucaT: Gestione override parametri specifici per Version 1.8-flux
+            // Override URL per 1.8-flux
+            const dynamicUrl18FluxOverride = getDynamicUrl18Flux(n.dynamicUrl18Flux);
+            if (dynamicUrl18FluxOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override URL (1.8-flux) changed from [${n.url}] to [${dynamicUrl18FluxOverride}]`);
+                n.url = dynamicUrl18FluxOverride;
+            }
+            // Override Username per 1.8-flux
+            const dynamicUsername18Override = getDynamicUsername18(n.dynamicUsername18);
+            if (dynamicUsername18Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Username (1.8-flux) changed (hidden for security)`);
+                // Lo username verrà gestito nella sezione credentials più avanti
+            }
+            // Override Password per 1.8-flux
+            const dynamicPassword18Override = getDynamicPassword18(n.dynamicPassword18);
+            if (dynamicPassword18Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Password (1.8-flux) changed (hidden for security)`);
+                // La password verrà gestita nella sezione credentials più avanti
+            }
+            // Override Timeout per 1.8-flux (riusa la stessa funzione)
+            const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
+            if (dynamicTimeoutOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Timeout (1.8-flux) changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
+                n.timeout = dynamicTimeoutOverride;
+            }
+            // Override Reject Unauthorized per 1.8-flux (riusa la stessa funzione)
+            const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
+            if (dynamicRejectUnauthorizedOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override RejectUnauthorized (1.8-flux) changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
+                n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
+            }
         } else if (n.influxdbVersion === VERSION_20) {
             // LucaT: Gestione override parametri specifici per Version 2.0
             // Override URL
@@ -218,18 +292,30 @@ module.exports = function (RED) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
-            // Override Timeout
-            const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
-            if (dynamicTimeoutOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
-                n.timeout = dynamicTimeoutOverride;
+            // Override Organization per 2.0
+            const dynamicOrg20Override = getDynamicOrg20(n.dynamicOrg20);
+            if (dynamicOrg20Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Organization changed from [${n.org}] to [${dynamicOrg20Override}]`);
+                n.org = dynamicOrg20Override;
             }
-            // Override Reject Unauthorized
-            const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
-            if (dynamicRejectUnauthorizedOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override RejectUnauthorized changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
-                n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
+            // Override Bucket per 2.0
+            const dynamicBucket20Override = getDynamicBucket20(n.dynamicBucket20);
+            if (dynamicBucket20Override !== null) {
+                RED.log.info(`InfluxDb dynamic override Bucket changed from [${n.bucket}] to [${dynamicBucket20Override}]`);
+                n.bucket = dynamicBucket20Override;
             }
+        }
+        // Override Timeout
+        const dynamicTimeoutOverride = getDynamicTimeout(n.dynamicTimeout);
+        if (dynamicTimeoutOverride !== null) {
+            RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
+            n.timeout = dynamicTimeoutOverride;
+        }
+        // Override Reject Unauthorized
+        const dynamicRejectUnauthorizedOverride = getDynamicRejectUnauthorized(n.dynamicRejectUnauthorized);
+        if (dynamicRejectUnauthorizedOverride !== null) {
+            RED.log.info(`InfluxDb dynamic override RejectUnauthorized changed from [${n.rejectUnauthorized}] to [${dynamicRejectUnauthorizedOverride}]`);
+            n.rejectUnauthorized = dynamicRejectUnauthorizedOverride;
         }
         // LucaT: Gestione version override (FINE)
 
@@ -265,7 +351,18 @@ module.exports = function (RED) {
             // LucaT: Gestione override delle credenziali prottette
             let token;
             if (n.influxdbVersion === VERSION_18_FLUX) {
-                token = `${this.credentials.username}:${this.credentials.password}`;
+                // VERSION_18_FLUX - controlla se ci sono override per username/password
+                let username = this.credentials.username;
+                let password = this.credentials.password;
+                const dynamicUsername18Override = getDynamicUsername18(n.dynamicUsername18);
+                if (dynamicUsername18Override !== null) {
+                    username = dynamicUsername18Override;
+                }
+                const dynamicPassword18Override = getDynamicPassword18(n.dynamicPassword18);
+                if (dynamicPassword18Override !== null) {
+                    password = dynamicPassword18Override;
+                }
+                token = `${username}:${password}`;
             } else {
                 // VERSION_20 - controlla se c'è un override del token
                 const dynamicTokenOverride = getDynamicToken20(n.dynamicToken20);
