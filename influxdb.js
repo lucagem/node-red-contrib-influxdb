@@ -876,18 +876,6 @@ module.exports = function (RED) {
                 }
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            let bucket;
-            if (version === VERSION_18_FLUX) {
-                let retentionPolicy = this.retentionPolicyV18Flux ?
-                    this.retentionPolicyV18Flux : 'autogen';
-                bucket = `${this.database}/${retentionPolicy}`;
-            } else {
-                bucket = this.bucket;
-            }
-            let org = version === VERSION_18_FLUX ? '' : this.org;
-
-            this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
-
             // LucaT: Aggiunta variabile per conteggio operazioni di scrittura
             node.writeCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
@@ -910,8 +898,24 @@ module.exports = function (RED) {
                     text: `writing (${node.writeCount})`
                 });
 
+                // LucaT: Modificata la gestione bucket e org per supportare dinamicamente le versioni 1.8-flux e 2.0
+                let bucket;
+                let org;
+                if (version === VERSION_18_FLUX) {
+                    // Per 1.8-flux, il bucket è sempre database/retention
+                    let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
+                    bucket = `${node.database}/${retentionPolicy}`;
+                    org = '';
+                } else {
+                    // Per 2.0, usa i valori dinamici se disponibili - RIVALUTA AD OGNI MESSAGGIO
+                    bucket = node.influxdbConfig.getEffectiveBucket(node.bucket);
+                    org = node.influxdbConfig.getEffectiveOrg(node.org);
+                }
+
+                // LucaT: Crea un nuovo writeApi ad ogni input con i parametri aggiornati
+                var client = node.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
+
                 if (_.isArray(msg.payload) && msg.payload.length > 0) {
-                    var client = node.client;
 
                     msg.payload.forEach(element => {
                         let measurement = element.measurement;
