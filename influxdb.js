@@ -418,10 +418,10 @@ module.exports = function (RED) {
                 }],
                 database: this.database,
                 username: username,
-                password: password 
+                password: password
             });
             // LucaT: DA TESTARE (FINE) Gestione override delle credenziali per VERSION_1X
-            
+
         } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
             // LucaT: Gestione override delle credenziali prottette
@@ -538,6 +538,14 @@ module.exports = function (RED) {
 
     // write using influx-client-js
     function writePoints(msg, node, done) {
+        // LucaT: Incrementa il contatore delle operazioni all'inizio della funzione
+        node.writeCount++;
+        node.status({
+            fill: "blue",
+            shape: "dot",
+            text: `writing (${node.writeCount})`
+        });
+
         var measurement = msg.hasOwnProperty('measurement') ? msg.measurement : node.measurement;
         if (!measurement) {
             // LucaT: Ripristina status anche in caso di errore
@@ -770,13 +778,6 @@ module.exports = function (RED) {
                     done();
                     return;
                 }
-                // LucaT: Aggiorna status a "writing" durante l'operazione
-                node.writeCount++;
-                node.status({
-                    fill: "blue",
-                    shape: "dot",
-                    text: `writing (${node.writeCount})`
-                });
                 writePoints(msg, node, done);
             });
         }
