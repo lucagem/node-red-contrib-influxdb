@@ -10,26 +10,26 @@ module.exports = function (RED) {
     const VERSION_20 = '2.0';
 
     /**
-     * LucaT: Helper function per gestire il version override
+     * LucaT: Helper function per gestire il version override - restituisce null se non deve intervenire
      */
-    function getDynamicVersion(dynamicVersion, originalVersion) {
+    function getDynamicVersion(dynamicVersion) {
         if (!dynamicVersion || dynamicVersion.trim() === "") {
-            return originalVersion; // Se vuoto, usa la versione originale
+            return null; // Non intervenire
         }
-        const trimmedValue = dynamicVersion.trim().toLowerCase();
+
+        const trimmedValue = dynamicVersion.trim();
+
         // Mappa i valori alle versioni corrette
         switch (trimmedValue) {
-            case "1.x":
             case "1":
                 return VERSION_1X;
             case "1.8":
                 return VERSION_18_FLUX;
-            case "2.x":
             case "2":
                 return VERSION_20;
             default:
-                // Se è una variabile di ambiente o valore non riconosciuto, usa la versione originale
-                return originalVersion;
+                // Se è una variabile di ambiente o valore non riconosciuto, non intervenire
+                return null;
         }
     }
 
@@ -139,19 +139,25 @@ module.exports = function (RED) {
         this.database = n.database;
         this.name = n.name;
 
-        // LucaT: Aggiunto supporto per valori dinamici
+        // LucaT: Aggiunto supporto per dynamicEnabled
         this.dynamicEnabled = n.dynamicEnabled;
-        this.dynamicVersion = n.dynamicVersion;
 
         var clientOptions = null;
 
         if (!n.influxdbVersion) {
             n.influxdbVersion = VERSION_1X;
         }
-        // LucaT: Ottieni la versione effettiva considerando il version override
-        this.effectiveVersion = getDynamicVersion(n.dynamicVersion, n.influxdbVersion);
 
-        if (this.effectiveVersion === VERSION_1X) {
+        // LucaT: Gestione version override - sostituisce il valore originale se necessario
+        const dynamicVersionOverride = getDynamicVersion(n.dynamicVersion);
+        if (dynamicVersionOverride !== null) {
+            const originalVersion = n.influxdbVersion;
+            n.influxdbVersion = dynamicVersionOverride;
+            // Log del cambiamento
+            RED.log.info(`InfluxDb dynamic override version changed from [${originalVersion}] to [${n.influxdbVersion}]`);
+        }
+
+        if (n.influxdbVersion === VERSION_1X) {
             this.usetls = n.usetls;
             if (typeof this.usetls === 'undefined') {
                 this.usetls = false;
@@ -178,10 +184,10 @@ module.exports = function (RED) {
                 username: this.credentials.username,
                 password: this.credentials.password
             });
-        } else if (this.effectiveVersion === VERSION_18_FLUX || this.effectiveVersion === VERSION_20) {
+        } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
 
-            const token = this.effectiveVersion === VERSION_18_FLUX ?
+            const token = n.influxdbVersion === VERSION_18_FLUX ?
                 `${this.credentials.username}:${this.credentials.password}` :
                 this.credentials.token;
 
@@ -349,7 +355,7 @@ module.exports = function (RED) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
         }
-        let version = this.influxdbConfig.effectiveVersion;
+        let version = this.influxdbConfig.influxdbVersion;
 
         var node = this;
 
@@ -519,7 +525,7 @@ module.exports = function (RED) {
             this.error(RED._("influxdb.errors.missingconfig"));
             return;
         }
-        let version = this.influxdbConfig.effectiveVersion;
+        let version = this.influxdbConfig.influxdbVersion;
 
         var node = this;
 
@@ -702,7 +708,7 @@ module.exports = function (RED) {
             return;
         }
 
-        let version = this.influxdbConfig.effectiveVersion;
+        let version = this.influxdbConfig.influxdbVersion
         if (version === VERSION_1X) {
             var node = this;
             var client = this.influxdbConfig.client;
