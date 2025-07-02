@@ -1,0 +1,15 @@
+{
+    "files.exclude": {
+        ".node-red-dev/": true,
+        "node_modules/": true
+    },
+    "search.exclude": {
+        ".node-red-dev/": true,
+        "node_modules/": true
+    },
+    "javascript.suggest.autoImports": false,
+    "typescript.suggest.autoImports": false,
+    "files.associations": {
+        "*.html": "html"
+    }
+}

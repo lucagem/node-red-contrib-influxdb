@@ -1,0 +1,154 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Node-RED - InfluxDB 1.0",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
+            "args": [
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*",
+                "IDB_ENABLED": "true",
+                "IDB_VERSION": "1",
+                "IDB_HOSTNAME": "10.0.0.114",
+                "IDB_PORT": "8085",
+                "IDB_DATABASE": "testdb",
+                "IDB_USERNAME": "admin",
+                "IDB_PASSWORD": "password123"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9229"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Debug Node-RED - InfluxDB 1.8-Flux",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
+            "args": [
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*",
+                "IDB_ENABLED": "true",
+                "IDB_VERSION": "1.8",
+                "IDB_URL": "http://10.0.0.114:8086",
+                "IDB_USERNAME": "admin",
+                "IDB_PASSWORD": "password123"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9230"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Debug Node-RED - InfluxDB 2.0",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
+            "args": [
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*",
+                "IDB_ENABLED": "true",
+                "IDB_VERSION": "2",
+                "IDB_URL": "http://10.0.0.114:8087",
+                "IDB_TOKEN": "my-super-secret-auth-token-123456789",
+                "IDB_ORG": "my-org",
+                "IDB_BUCKET": "testdb"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9231"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Debug Node-RED - Connection Disabled",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
+            "args": [
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*",
+                "IDB_ENABLED": "false",
+                "IDB_VERSION": "2",
+                "IDB_URL": "http://10.0.0.114:8087",
+                "IDB_TOKEN": "my-super-secret-auth-token-123456789",
+                "IDB_ORG": "my-org",
+                "IDB_BUCKET": "testdb"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9232"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Debug Node-RED - Dynamic Override Test",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/node-red/red.js",
+            "args": [
+                "--userDir", "${workspaceFolder}\\.node-red-dev",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "influx*",
+                "IDB_ENABLED": "true",
+                "IDB_VERSION": "2",
+                "IDB_URL": "http://10.0.0.114:8087",
+                "IDB_TOKEN": "my-super-secret-auth-token-123456789",
+                "IDB_ORG": "my-org",
+                "IDB_BUCKET": "testdb",
+                "IDB_HOSTNAME": "10.0.0.114",
+                "IDB_PORT": "8085",
+                "IDB_DATABASE": "testdb",
+                "IDB_USERNAME": "admin",
+                "IDB_PASSWORD": "password123"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "runtimeArgs": ["--inspect=9233"],
+            "outputCapture": "std"
+        },
+        {
+            "name": "Attach to Node-RED",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        }
+    ]
+}
