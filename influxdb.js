@@ -36,28 +36,28 @@ module.exports = function (RED) {
     /**
      * LucaT: Helper functions per gestire gli override dei parametri Version 2.0
      */
-    function getDynamicUrl20(dynamicUrl20) {
-        if (!dynamicUrl20 || dynamicUrl20.trim() === "") {
+    function getDynamicUrl2x(dynamicUrl2x) {
+        if (!dynamicUrl2x || dynamicUrl2x.trim() === "") {
             return null; // Non intervenire
         }
-        const trimmedValue = dynamicUrl20.trim();
+        const trimmedValue = dynamicUrl2x.trim();
         // Verifica che sia un URL valido
         if (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) {
             return trimmedValue;
         }
         return null; // Non intervenire se non è un URL valido
     }
-    function getDynamicToken20(dynamicToken20) {
-        if (!dynamicToken20 || dynamicToken20.trim() === "") {
+    function getDynamicToken2x(dynamicToken2x) {
+        if (!dynamicToken2x || dynamicToken2x.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicToken20.trim(); // Accetta qualsiasi valore non vuoto
+        return dynamicToken2x.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicTimeout20(dynamicTimeout20) {
-        if (!dynamicTimeout20 || dynamicTimeout20.trim() === "") {
+    function getDynamicTimeout2x(dynamicTimeout2x) {
+        if (!dynamicTimeout2x || dynamicTimeout2x.trim() === "") {
             return null; // Non intervenire
         }
-        const trimmedValue = dynamicTimeout20.trim();
+        const trimmedValue = dynamicTimeout2x.trim();
         // Verifica che sia un numero valido
         const timeoutValue = parseInt(trimmedValue);
         if (!isNaN(timeoutValue) && timeoutValue > 0) {
@@ -80,17 +80,17 @@ module.exports = function (RED) {
         }
         return null; // Non intervenire se non è un URL valido
     }
-    function getDynamicUsername18(dynamicUsername18) {
-        if (!dynamicUsername18 || dynamicUsername18.trim() === "") {
+    function getDynamicUsername18Flux(dynamicUsername18Flux) {
+        if (!dynamicUsername18Flux || dynamicUsername18Flux.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicUsername18.trim(); // Accetta qualsiasi valore non vuoto
+        return dynamicUsername18Flux.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicPassword18(dynamicPassword18) {
-        if (!dynamicPassword18 || dynamicPassword18.trim() === "") {
+    function getDynamicPassword18Flux(dynamicPassword18Flux) {
+        if (!dynamicPassword18Flux || dynamicPassword18Flux.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicPassword18.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
+        return dynamicPassword18Flux.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
     }
 
 
@@ -116,23 +116,23 @@ module.exports = function (RED) {
         }
         return null; // Non intervenire se non è un numero valido
     }
-    function getDynamicDatabase10(dynamicDatabase10) {
-        if (!dynamicDatabase10 || dynamicDatabase10.trim() === "") {
+    function getDynamicDatabase1x(dynamicDatabase1x) {
+        if (!dynamicDatabase1x || dynamicDatabase1x.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicDatabase10.trim(); // Accetta qualsiasi valore non vuoto
+        return dynamicDatabase1x.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicUsername10(dynamicUsername10) {
-        if (!dynamicUsername10 || dynamicUsername10.trim() === "") {
+    function getDynamicUsername1x(dynamicUsername1x) {
+        if (!dynamicUsername1x || dynamicUsername1x.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicUsername10.trim(); // Accetta qualsiasi valore non vuoto
+        return dynamicUsername1x.trim(); // Accetta qualsiasi valore non vuoto
     }
-    function getDynamicPassword10(dynamicPassword10) {
-        if (!dynamicPassword10 || dynamicPassword10.trim() === "") {
+    function getDynamicPassword1x(dynamicPassword1x) {
+        if (!dynamicPassword1x || dynamicPassword1x.trim() === "") {
             return null; // Non intervenire
         }
-        return dynamicPassword10.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
+        return dynamicPassword1x.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
     }
 
     /**
@@ -273,20 +273,20 @@ module.exports = function (RED) {
                 this.port = dynamicPort1xOverride;
             }
             // Override Database per 1.0
-            const dynamicDatabase10Override = getDynamicDatabase10(n.dynamicDatabase10);
-            if (dynamicDatabase10Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Database (1.0) changed from [${this.database}] to [${dynamicDatabase10Override}]`);
-                this.database = dynamicDatabase10Override;
+            const dynamicDatabase1xOverride = getDynamicDatabase1x(n.dynamicDatabase1x);
+            if (dynamicDatabase1xOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Database (1.0) changed from [${this.database}] to [${dynamicDatabase1xOverride}]`);
+                this.database = dynamicDatabase1xOverride;
             }
             // Override Username per 1.0
-            const dynamicUsername10Override = getDynamicUsername10(n.dynamicUsername10);
-            if (dynamicUsername10Override !== null) {
+            const dynamicUsername1xOverride = getDynamicUsername1x(n.dynamicUsername1x);
+            if (dynamicUsername1xOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Username (1.0) changed (hidden for security)`);
                 // Lo username verrà gestito nella sezione credentials più avanti
             }
             // Override Password per 1.0
-            const dynamicPassword10Override = getDynamicPassword10(n.dynamicPassword10);
-            if (dynamicPassword10Override !== null) {
+            const dynamicPassword1xOverride = getDynamicPassword1x(n.dynamicPassword1x);
+            if (dynamicPassword1xOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Password (1.0) changed (hidden for security)`);
                 // La password verrà gestita nella sezione credentials più avanti
             }
@@ -299,36 +299,36 @@ module.exports = function (RED) {
                 n.url = dynamicUrl18FluxOverride;
             }
             // Override Username per 1.8-flux
-            const dynamicUsername18Override = getDynamicUsername18(n.dynamicUsername18);
-            if (dynamicUsername18Override !== null) {
+            const dynamicUsername18FluxOverride = getDynamicUsername18Flux(n.dynamicUsername18Flux);
+            if (dynamicUsername18FluxOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Username (1.8-flux) changed (hidden for security)`);
                 // Lo username verrà gestito nella sezione credentials più avanti
             }
             // Override Password per 1.8-flux
-            const dynamicPassword18Override = getDynamicPassword18(n.dynamicPassword18);
-            if (dynamicPassword18Override !== null) {
+            const dynamicPassword18FluxOverride = getDynamicPassword18Flux(n.dynamicPassword18Flux);
+            if (dynamicPassword18FluxOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Password (1.8-flux) changed (hidden for security)`);
                 // La password verrà gestita nella sezione credentials più avanti
             }
         } else if (n.influxdbVersion === VERSION_20) {
             // LucaT: Gestione override parametri specifici per Version 2.0
             // Override URL
-            const dynamicUrlOverride = getDynamicUrl20(n.dynamicUrl20);
+            const dynamicUrlOverride = getDynamicUrl2x(n.dynamicUrl2x);
             if (dynamicUrlOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override URL changed from [${n.url}] to [${dynamicUrlOverride}]`);
                 n.url = dynamicUrlOverride;
             }
             // Override Token (viene gestito nelle credentials)
-            const dynamicTokenOverride = getDynamicToken20(n.dynamicToken20);
+            const dynamicTokenOverride = getDynamicToken2x(n.dynamicToken2x);
             if (dynamicTokenOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
             // Override Timeout
-            const dynamicTimeout20Override = getDynamicTimeout20(n.dynamicTimeout20);
-            if (dynamicTimeout20Override !== null) {
-                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeout20Override}]`);
-                n.timeout = dynamicTimeout20Override;
+            const dynamicTimeout2xOverride = getDynamicTimeout2x(n.dynamicTimeout2x);
+            if (dynamicTimeout2xOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeout2xOverride}]`);
+                n.timeout = dynamicTimeout2xOverride;
             }
         }
         // LucaT: Gestione version override (FINE)
@@ -353,13 +353,13 @@ module.exports = function (RED) {
             // LucaT: DA TESTARE (INIZIO) Gestione override delle credenziali per VERSION_1X
             let username = this.credentials.username;
             let password = this.credentials.password;
-            const dynamicUsername10Override = getDynamicUsername10(n.dynamicUsername10);
-            if (dynamicUsername10Override !== null) {
-                username = dynamicUsername10Override;
+            const dynamicUsername1xOverride = getDynamicUsername1x(n.dynamicUsername1x);
+            if (dynamicUsername1xOverride !== null) {
+                username = dynamicUsername1xOverride;
             }
-            const dynamicPassword10Override = getDynamicPassword10(n.dynamicPassword10);
-            if (dynamicPassword10Override !== null) {
-                password = dynamicPassword10Override;
+            const dynamicPassword1xOverride = getDynamicPassword1x(n.dynamicPassword1x);
+            if (dynamicPassword1xOverride !== null) {
+                password = dynamicPassword1xOverride;
             }
             this.client = new Influx.InfluxDB({
                 hosts: [{
@@ -382,18 +382,18 @@ module.exports = function (RED) {
                 // VERSION_18_FLUX - controlla se ci sono override per username/password
                 let username = this.credentials.username;
                 let password = this.credentials.password;
-                const dynamicUsername18Override = getDynamicUsername18(n.dynamicUsername18);
-                if (dynamicUsername18Override !== null) {
-                    username = dynamicUsername18Override;
+                const dynamicUsername18FluxOverride = getDynamicUsername18Flux(n.dynamicUsername18Flux);
+                if (dynamicUsername18FluxOverride !== null) {
+                    username = dynamicUsername18FluxOverride;
                 }
-                const dynamicPassword18Override = getDynamicPassword18(n.dynamicPassword18);
-                if (dynamicPassword18Override !== null) {
-                    password = dynamicPassword18Override;
+                const dynamicPassword18FluxOverride = getDynamicPassword18Flux(n.dynamicPassword18Flux);
+                if (dynamicPassword18FluxOverride !== null) {
+                    password = dynamicPassword18FluxOverride;
                 }
                 token = `${username}:${password}`;
             } else {
                 // VERSION_20 - controlla se c'è un override del token
-                const dynamicTokenOverride = getDynamicToken20(n.dynamicToken20);
+                const dynamicTokenOverride = getDynamicToken2x(n.dynamicToken2x);
                 token = dynamicTokenOverride !== null ? dynamicTokenOverride : this.credentials.token;
             }
 
