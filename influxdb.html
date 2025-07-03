@@ -190,6 +190,7 @@
     <!-- LucaT (END) -->
 </script>
 
+<!-- #region Javascript Nodo CONFIG -->
 <script type="text/javascript">
     function getVersion() {
         return $("#node-config-input-influxdbVersion option:selected").val();
@@ -515,7 +516,9 @@
         }
     });
 </script>
+<!-- #endregion Javascript Nodo CONFIG -->
 
+<!-- #region NODO OUT-->
 <script type="text/html" data-template-name="influxdb out">
     <!-- LucaT: Aggiunta struttura con tab per proprietà dinamiche -->
 <div class="form-row">
@@ -691,7 +694,6 @@
     </div>
 </div>
 </script>
-
 <script type="text/html" data-help-name="influxdb out">
     <p>A simple influxdb output node to write values and tags to an influxdb measurement.</p>
     <p>The fields and tags to write are in <b>msg.payload</b>. If <b>msg.payload</b> is a string, number, or boolean, 
@@ -711,7 +713,9 @@
     <p><b>InfluxDB 1.8 Flux and InfluxDB 2.0 Mode</b></p>
     <p>If no retention policy is specified, <i>autogen</i> will be assumed.</p>
 </script>
+<!-- #endregion NODO OUT -->
 
+<!-- #region Javascript Nodo OUT -->
 <script type="text/javascript">
     function selectedVersion() {
         // use prefix to update UI when version of config node changes
@@ -741,7 +745,7 @@
             dynamicRetentionPolicyV18Flux: { value: "" },
             dynamicOrg: { value: "" },
             dynamicBucket: { value: "" },
-            dynamicPrecision: { value: "" },            
+            dynamicPrecision: { value: "" },
             database: {
                 value: "database",
                 validate: function (db) {
@@ -785,6 +789,34 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function () {
+            // ------------ LucaT: Inizializzazione tab START
+            var tabs = RED.tabs.create({
+                id: "node-influxdb-out-tabs",
+                onchange: function (tab) {
+                    $("#node-influxdb-out-tabs-content").children().hide();
+                    $("#" + tab.id).show();
+                }
+            });
+            tabs.addTab({
+                id: "influxdb-out-tab-connection",
+                label: "Configuration"
+            });
+            tabs.addTab({
+                id: "influxdb-out-tab-dynamic",
+                label: "Dynamic Properties"
+            });
+            setTimeout(function () {
+                tabs.resize()
+            }, 0);
+
+            // Popola i campi dinamici con i valori salvati
+            $("#node-input-dynamicMeasurement").val(this.dynamicMeasurement || "");
+            $("#node-input-dynamicDatabase").val(this.dynamicDatabase || "");
+            $("#node-input-dynamicRetentionPolicyV18Flux").val(this.dynamicRetentionPolicyV18Flux || "");
+            $("#node-input-dynamicOrg").val(this.dynamicOrg || "");
+            $("#node-input-dynamicBucket").val(this.dynamicBucket || "");
+            $("#node-input-dynamicPrecision").val(this.dynamicPrecision || "");
+            // ------------ LucaT: Inizializzazione tab END            
             $("#advanced-options-checkbox").change(function () {
                 if ($('#advanced-options-checkbox').is(":checked")) {
                     $("#advanced-options-div").show();
@@ -881,7 +913,9 @@
         }
     });
 </script>
+<!-- #endregion Javascript Nodo OUT -->
 
+<!-- #region NODO BATCH -->
 <script type="text/html" data-template-name="influxdb batch">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -942,7 +976,6 @@
     </div>
     <div class="form-tips" id="node-warning-retention-policy"><span data-i18n="[html]influxdb.tip.retention-policy"></span></div>
 </script>
-
 <script type="text/html" data-help-name="influxdb batch">
     <p><b>InfluxDB 1.8</b></p>
     <p>A influxdb output node to write multiple points (fields and tags) to multiple influxdb measurements.</p>
@@ -954,7 +987,9 @@
     <p>The advanced query options <i>Time Precision</i> and <i>Retention Policy</i> can be overwritten using 
     message properties <b>msg.precision</b> and <b>msg.retentionPolicy</b>.</p>
 </script>
+<!-- #endregion NODO BATCH -->
 
+<!-- #region Javacript Nodo BATCH -->
 <script type="text/javascript">
     RED.nodes.registerType('influxdb batch', {
         category: 'storage-output',
@@ -1076,7 +1111,9 @@
         }
     });
 </script>
+<!-- #endregion Javacript Nodo BATCH -->
 
+<!-- #region NODO IN -->
 <script type="text/html" data-template-name="influxdb in">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -1127,7 +1164,6 @@
     </div>
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]influxdb.tip.querytip"></span></div>
 </script>
-
 <script type="text/html" data-help-name="influxdb in">
     <p>Allows basic queries to be made to an influxdb time series database.</p>
     <p>The query can be specified in the configuration property or using the property
@@ -1145,7 +1181,9 @@
     <p>Uses a flux query in the configuration property or using the property
     <b>msg.query</b>. The results will be returned in <b>msg.payload</b>.</p>
 </script>
+<!-- #region NODO IN -->
 
+<!-- #region Javacript Nodo IN -->
 <script type="text/javascript">
     RED.nodes.registerType('influxdb in', {
         category: 'storage-input',
@@ -1255,3 +1293,4 @@
         }
     });
 </script>
+<!-- #endregion Javacript Nodo IN -->
