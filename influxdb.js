@@ -216,7 +216,7 @@ module.exports = function (RED) {
         const dynamicUrlOverride = getDynamicUrl(n.dynamicUrl);
         const dynamicDatabaseOverride = getDynamicStringNotEmpty(n.dynamicDatabase);
         const dynamicUsernameOverride = getDynamicStringNotEmpty(n.dynamicUsername);
-        const dynamicPasswordOverride = getDynamicStringNotEmpty(n.dynamicPassword); 
+        const dynamicPasswordOverride = getDynamicStringNotEmpty(n.dynamicPassword);
         const dynamicTokenOverride = getDynamicStringNotEmpty(n.dynamicToken);
         const dynamicTimeoutOverride = getDynamicPositiveInteger(n.dynamicTimeout);
         const dynamicVerifyCertificateOverride = getDynamicBoolean(n.dynamicVerifyCertificate)
@@ -494,8 +494,8 @@ module.exports = function (RED) {
     }
 
     /**
-     * Output node to write to a single influxdb measurement
-     */
+ * Output node to write to a single influxdb measurement
+ */
     function InfluxOutNode(n) {
         RED.nodes.createNode(this, n);
         this.measurement = n.measurement;
@@ -510,14 +510,52 @@ module.exports = function (RED) {
         this.retentionPolicyV18Flux = n.retentionPolicyV18Flux;
         this.org = n.org;
         this.bucket = n.bucket;
-        
-        // LucaT: Dynamic Properties per nodo OUT
-        this.dynamicMeasurementOut = getDynamicStringNotEmpty(n.dynamicMeasurementOut);
-        this.dynamicDatabaseOut = getDynamicStringNotEmpty(n.dynamicDatabaseOut);
-        this.dynamicRetentionPolicyOut = getDynamicStringNotEmpty(n.dynamicRetentionPolicyOut);
-        this.dynamicOrgOut = getDynamicStringNotEmpty(n.dynamicOrgOut);
-        this.dynamicBucketOut = getDynamicStringNotEmpty(n.dynamicBucketOut);
-        this.dynamicPrecisionOut = getDynamicPrecision(n.dynamicPrecisionOut);
+
+        // LucaT: Dynamic Properties per nodo OUT - gestione override
+        const dynamicMeasurementOut = getDynamicStringNotEmpty(n.dynamicMeasurementOut);
+        const dynamicDatabaseOut = getDynamicStringNotEmpty(n.dynamicDatabaseOut);
+        const dynamicRetentionPolicyOut = getDynamicStringNotEmpty(n.dynamicRetentionPolicyOut);
+        const dynamicOrgOut = getDynamicStringNotEmpty(n.dynamicOrgOut);
+        const dynamicBucketOut = getDynamicStringNotEmpty(n.dynamicBucketOut);
+        const dynamicPrecisionOut = getDynamicPrecision(n.dynamicPrecisionOut);
+
+        // LucaT: Applica gli override se disponibili
+        if (dynamicMeasurementOut !== null) {
+            RED.log.info(`InfluxDb OUT dynamic override Measurement changed from [${this.measurement}] to [${dynamicMeasurementOut}]`);
+            this.measurement = dynamicMeasurementOut;
+        }
+        if (dynamicDatabaseOut !== null) {
+            RED.log.info(`InfluxDb OUT dynamic override Database changed from [${this.database}] to [${dynamicDatabaseOut}]`);
+            this.database = dynamicDatabaseOut;
+        }
+        if (dynamicRetentionPolicyOut !== null) {
+            // Per 1.x usa retentionPolicy, per 1.8-flux usa retentionPolicyV18Flux
+            if (this.influxdbConfig.influxdbVersion === VERSION_1X) {
+                RED.log.info(`InfluxDb OUT dynamic override RetentionPolicy (1.x) changed from [${this.retentionPolicy}] to [${dynamicRetentionPolicyOut}]`);
+                this.retentionPolicy = dynamicRetentionPolicyOut;
+            } else if (this.influxdbConfig.influxdbVersion === VERSION_18_FLUX) {
+                RED.log.info(`InfluxDb OUT dynamic override RetentionPolicyV18Flux changed from [${this.retentionPolicyV18Flux}] to [${dynamicRetentionPolicyOut}]`);
+                this.retentionPolicyV18Flux = dynamicRetentionPolicyOut;
+            }
+        }
+        if (dynamicOrgOut !== null) {
+            RED.log.info(`InfluxDb OUT dynamic override Organization changed from [${this.org}] to [${dynamicOrgOut}]`);
+            this.org = dynamicOrgOut;
+        }
+        if (dynamicBucketOut !== null) {
+            RED.log.info(`InfluxDb OUT dynamic override Bucket changed from [${this.bucket}] to [${dynamicBucketOut}]`);
+            this.bucket = dynamicBucketOut;
+        }
+        if (dynamicPrecisionOut !== null) {
+            // Per 1.x usa precision, per 1.8-flux e 2.0 usa precisionV18FluxV20
+            if (this.influxdbConfig.influxdbVersion === VERSION_1X) {
+                RED.log.info(`InfluxDb OUT dynamic override Precision (1.x) changed from [${this.precision}] to [${dynamicPrecisionOut}]`);
+                this.precision = dynamicPrecisionOut;
+            } else if (this.influxdbConfig.influxdbVersion === VERSION_18_FLUX || this.influxdbConfig.influxdbVersion === VERSION_20) {
+                RED.log.info(`InfluxDb OUT dynamic override PrecisionV18FluxV20 changed from [${this.precisionV18FluxV20}] to [${dynamicPrecisionOut}]`);
+                this.precisionV18FluxV20 = dynamicPrecisionOut;
+            }
+        }
 
         // LucaT: Aggiungi contatore delle operazioni
         this.writeCount = 0;
@@ -538,12 +576,11 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!connectionEnabled) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
-                // LucaT: Aggiorna status a "writing" durante l'operazione
+
                 // LucaT: Incrementa contatore e aggiorna status a "writing"
                 node.writeCount++;
                 node.status({
@@ -555,10 +592,14 @@ module.exports = function (RED) {
                 var measurement;
                 var writeOptions = {};
 
+                // LucaT: Supporta override dinamico del measurement anche via messaggio
                 var measurement = msg.hasOwnProperty('measurement') ? msg.measurement : node.measurement;
                 if (!measurement) {
+                    updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     return done(RED._("influxdb.errors.nomeasurement"));
                 }
+
+                // LucaT: Supporta override dinamico di precision e retentionPolicy anche via messaggio
                 var precision = msg.hasOwnProperty('precision') ? msg.precision : node.precision;
                 var retentionPolicy = msg.hasOwnProperty('retentionPolicy') ? msg.retentionPolicy : node.retentionPolicy;
 
@@ -570,6 +611,7 @@ module.exports = function (RED) {
                     writeOptions.retentionPolicy = retentionPolicy;
                 }
 
+                // ... resto del codice per la scrittura (rimane uguale)
                 // format payload to match new writePoints API
                 var points = [];
                 var point;
@@ -629,38 +671,33 @@ module.exports = function (RED) {
                     points.push(point);
                 }
                 client.writePoints(points, writeOptions).then(() => {
-                    // Alla fine dell'operazione, ripristina lo status
-                    updateNodeStatus(node, node.influxdbConfig);
+                    updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     done();
                 }).catch(error => {
-                    // LucaT: usa createInfluxError per standardizzare l'errore
                     msg.influx_error = createInfluxError(error);
-                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
                     showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
                     done(error);
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            // LucaT: Aggiunto supporto per il bucket dinamico (INIZIO)
+            // LucaT: Gestione dinamica di bucket e org per supportare override
             let bucket;
             let org;
             if (version === VERSION_18_FLUX) {
                 // Per 1.8-flux, il bucket è sempre database/retention
-                let retentionPolicy = this.retentionPolicyV18Flux ? this.retentionPolicyV18Flux : 'autogen';
-                bucket = `${this.database}/${retentionPolicy}`;
+                let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
+                bucket = `${node.database}/${retentionPolicy}`;
                 org = '';
             } else {
-                // Per 2.0, usa i valori dinamici se disponibili
-                bucket = this.bucket;
-                org = this.org;
+                // Per 2.0, usa i valori (potenzialmente overridden)
+                bucket = node.bucket;
+                org = node.org;
             }
-            this.client = this.influxdbConfig.client.getWriteApi(org, bucket, this.precisionV18FluxV20);
-            // LucaT: Aggiunto supporto per il bucket dinamico (FINE)
+            this.client = this.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -668,6 +705,7 @@ module.exports = function (RED) {
                 writePoints(msg, node, done);
             });
         }
+
         // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
@@ -676,6 +714,9 @@ module.exports = function (RED) {
 
     RED.nodes.registerType("influxdb out", InfluxOutNode);
 
+    /**
+     * Output node to write to multiple InfluxDb measurements
+     */
     /**
      * Output node to write to multiple InfluxDb measurements
      */
@@ -692,6 +733,10 @@ module.exports = function (RED) {
         this.retentionPolicyV18Flux = n.retentionPolicyV18Flux;
         this.org = n.org;
         this.bucket = n.bucket;
+
+        // LucaT: Dynamic Properties per nodo BATCH - gestione override (se necessari)
+        // Per ora il nodo BATCH non ha proprietà dinamiche specifiche nell'HTML,
+        // ma se servissero in futuro, la logica sarebbe simile al nodo OUT
 
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
@@ -712,7 +757,6 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -746,18 +790,14 @@ module.exports = function (RED) {
 
                 if (_.isArray(msg.payload) && msg.payload.length > 0) {
                     client.writePoints(msg.payload, writeOptions).then(() => {
-                        // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
                         updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                         done();
                     }).catch(error => {
-                        // LucaT: usa createInfluxError per standardizzare l'errore
                         msg.influx_error = createInfluxError(error);
-                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
                         showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
                         done(error);
                     });
                 } else {
-                    // LucaT: Ripristina status a "ready" se non ci sono dati da scrivere
                     updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     done();
                 }
@@ -771,7 +811,6 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -785,7 +824,7 @@ module.exports = function (RED) {
                     text: `writing (${node.writeCount})`
                 });
 
-                // LucaT: Modificata la gestione bucket e org per supportare dinamicamente le versioni 1.8-flux e 2.0
+                // LucaT: Gestione dinamica bucket e org per supportare override
                 let bucket;
                 let org;
                 if (version === VERSION_18_FLUX) {
@@ -794,7 +833,7 @@ module.exports = function (RED) {
                     bucket = `${node.database}/${retentionPolicy}`;
                     org = '';
                 } else {
-                    // Per 2.0, usa i valori dinamici se disponibili - RIVALUTA AD OGNI MESSAGGIO
+                    // Per 2.0, usa i valori (potenzialmente overridden)
                     bucket = node.bucket;
                     org = node.org;
                 }
@@ -813,18 +852,11 @@ module.exports = function (RED) {
 
                         // if there are no fields, show an error - cant have an empty InfluxDb write!
                         if (_.isEmpty(fields)) {
-                            // LucaT: usa createInfluxError per standardizzare l'errore
                             msg.influx_error = createInfluxError(new Error("Fields are required"));
-                            // LucaT: Ripristina status a "ready" dopo l'errore
                             updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                             return done(new Error("Fields are required"));
                         }
 
-                        // The value of element.timestamp will be used even if it is
-                        // undefined, however the Point library will handle that to set the
-                        // timestamp to be the current timestamp.
-                        // If the timestamp is provided in the payload then this will
-                        // be overridden by the timestamp below.
                         addFieldsToPoint(point, element.fields);
 
                         let tags = element.tags;
@@ -841,31 +873,30 @@ module.exports = function (RED) {
 
                     // ensure we write everything including scheduled retries
                     client.flush(true).then(() => {
-                        // LucaT: Ripristina status a "ready" dopo aver completato la scrittura
                         updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                         done();
                     }).catch(error => {
-                        // LucaT: usa createInfluxError per standardizzare l'errore
                         msg.influx_error = createInfluxError(error);
-                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
                         showTemporaryError(node, node.influxdbConfig, error, node.writeCount);
                         done(error);
                     });
                 } else {
-                    // LucaT: Ripristina status a "ready" se non ci sono dati da scrivere
                     updateNodeStatus(node, node.influxdbConfig, node.writeCount);
                     done();
                 }
             });
         }
+
         // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
         });
     }
-
     RED.nodes.registerType("influxdb batch", InfluxBatchNode);
 
+    /**
+     * Input node to make queries to influxdb
+     */
     /**
      * Input node to make queries to influxdb
      */
@@ -878,6 +909,10 @@ module.exports = function (RED) {
         this.rawOutput = n.rawOutput;
         this.influxdbConfig = RED.nodes.getNode(this.influxdb);
         this.org = n.org;
+
+        // LucaT: Dynamic Properties per nodo IN - gestione override (se necessari)
+        // Il nodo IN al momento non ha proprietà dinamiche specifiche nell'HTML,
+        // ma potremmo aggiungere override per query, organization, ecc. se necessario
 
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
@@ -897,11 +932,11 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+
                 // LucaT: Aggiorna status a "reading" durante l'operazione
                 node.readCount++;
                 node.status({
@@ -918,6 +953,7 @@ module.exports = function (RED) {
 
                 query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
+                    updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     return done(RED._("influxdb.errors.noquery"));
                 }
 
@@ -942,19 +978,17 @@ module.exports = function (RED) {
                 queryPromise.then(function (results) {
                     msg.payload = results;
                     send(msg);
-                    // LucaT: Ripristina lo status a "ready" dopo la lettura
                     updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     done();
                 }).catch(error => {
-                    // LucaT: usa createInfluxError per standardizzare l'errore
                     msg.influx_error = createInfluxError(error);
-                    // LucaT: Mostra errore temporaneamente poi torna a "ready"
                     showTemporaryError(node, node.influxdbConfig, error, node.readCount);
                     done(error);
                 });
             });
 
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
+            // LucaT: Gestione dinamica dell'organizzazione per supportare override
             let org = version === VERSION_20 ? this.org : ''
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
@@ -967,11 +1001,11 @@ module.exports = function (RED) {
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
                 if (!node.influxdbConfig.isConnectionEnabled()) {
-                    // Se disabilitato, aggiorna lo status e ignora silenziosamente
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+
                 // LucaT: Aggiorna status a "reading" durante l'operazione
                 node.readCount++;
                 node.status({
@@ -982,6 +1016,7 @@ module.exports = function (RED) {
 
                 var query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
+                    updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     return done(RED._("influxdb.errors.noquery"));
                 }
                 var output = [];
@@ -991,27 +1026,24 @@ module.exports = function (RED) {
                         output.push(o);
                     },
                     error(error) {
-                        // LucaT: usa createInfluxError per standardizzare l'errore
                         msg.influx_error = createInfluxError(error);
-                        // LucaT: Mostra errore temporaneamente poi torna a "ready"
                         showTemporaryError(node, node.influxdbConfig, error, node.readCount);
                         done(error);
                     },
                     complete() {
                         msg.payload = output;
                         send(msg);
-                        // LucaT: Ripristina lo status a "ready" dopo la lettura
                         updateNodeStatus(node, node.influxdbConfig, node.readCount);
                         done();
                     },
                 });
             });
         }
+
         // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
         });
     }
-
     RED.nodes.registerType("influxdb in", InfluxInNode);
 }
