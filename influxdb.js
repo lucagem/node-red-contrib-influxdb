@@ -13,7 +13,7 @@ module.exports = function (RED) {
      * LucaT: Helper function per gestire il version override - restituisce null se non deve intervenire
      */
     function getDynamicVersion(dynamicVersion) {
-        if (!dynamicVersion || dynamicVersion.trim() === "") {
+        if (!dynamicVersion || dynamicVersion.trim() === "" || isEnvironmentVariable(dynamicVersion)) {
             return null; // Non intervenire
         }
 
@@ -37,7 +37,7 @@ module.exports = function (RED) {
      * LucaT: Helper functions per gestire gli override dei parametri Version 2.0
      */
     function getDynamicUrl2x(dynamicUrl2x) {
-        if (!dynamicUrl2x || dynamicUrl2x.trim() === "") {
+        if (!dynamicUrl2x || dynamicUrl2x.trim() === "" || isEnvironmentVariable(dynamicUrl2x)) {
             return null; // Non intervenire
         }
         const trimmedValue = dynamicUrl2x.trim();
@@ -48,13 +48,13 @@ module.exports = function (RED) {
         return null; // Non intervenire se non è un URL valido
     }
     function getDynamicToken2x(dynamicToken2x) {
-        if (!dynamicToken2x || dynamicToken2x.trim() === "") {
+        if (!dynamicToken2x || dynamicToken2x.trim() === "" || isEnvironmentVariable(dynamicToken2x)) {
             return null; // Non intervenire
         }
         return dynamicToken2x.trim(); // Accetta qualsiasi valore non vuoto
     }
     function getDynamicTimeout2x(dynamicTimeout2x) {
-        if (!dynamicTimeout2x || dynamicTimeout2x.trim() === "") {
+        if (!dynamicTimeout2x || dynamicTimeout2x.trim() === "" || isEnvironmentVariable(dynamicTimeout2x)) {
             return null; // Non intervenire
         }
         const trimmedValue = dynamicTimeout2x.trim();
@@ -70,7 +70,7 @@ module.exports = function (RED) {
      * LucaT: Helper functions per gestire gli override dei parametri Version 1.8-flux  
      */
     function getDynamicUrl18Flux(dynamicUrl18Flux) {
-        if (!dynamicUrl18Flux || dynamicUrl18Flux.trim() === "") {
+        if (!dynamicUrl18Flux || dynamicUrl18Flux.trim() === "" || isEnvironmentVariable(dynamicUrl18Flux)) {
             return null; // Non intervenire
         }
         const trimmedValue = dynamicUrl18Flux.trim();
@@ -81,31 +81,29 @@ module.exports = function (RED) {
         return null; // Non intervenire se non è un URL valido
     }
     function getDynamicUsername18Flux(dynamicUsername18Flux) {
-        if (!dynamicUsername18Flux || dynamicUsername18Flux.trim() === "") {
+        if (!dynamicUsername18Flux || dynamicUsername18Flux.trim() === "" || isEnvironmentVariable(dynamicUsername18Flux)) {
             return null; // Non intervenire
         }
         return dynamicUsername18Flux.trim(); // Accetta qualsiasi valore non vuoto
     }
     function getDynamicPassword18Flux(dynamicPassword18Flux) {
-        if (!dynamicPassword18Flux || dynamicPassword18Flux.trim() === "") {
+        if (!dynamicPassword18Flux || dynamicPassword18Flux.trim() === "" || isEnvironmentVariable(dynamicPassword18Flux)) {
             return null; // Non intervenire
         }
         return dynamicPassword18Flux.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
     }
 
-
     /**
      * LucaT: Helper functions per gestire gli override dei parametri Version 1.0
-     * NOTA: Queste funzioni sono DA TESTARE con un'istanza InfluxDB 1.0
      */
     function getDynamicHostname1x(dynamicHostname1x) {
-        if (!dynamicHostname1x || dynamicHostname1x.trim() === "") {
+        if (!dynamicHostname1x || dynamicHostname1x.trim() === "" || isEnvironmentVariable(dynamicHostname1x)) {
             return null; // Non intervenire
         }
         return dynamicHostname1x.trim(); // Accetta qualsiasi valore non vuoto
     }
     function getDynamicPort1x(dynamicPort1x) {
-        if (!dynamicPort1x || dynamicPort1x.trim() === "") {
+        if (!dynamicPort1x || dynamicPort1x.trim() === "" || isEnvironmentVariable(dynamicPort1x)) {
             return null; // Non intervenire
         }
         const trimmedValue = dynamicPort1x.trim();
@@ -117,22 +115,83 @@ module.exports = function (RED) {
         return null; // Non intervenire se non è un numero valido
     }
     function getDynamicDatabase1x(dynamicDatabase1x) {
-        if (!dynamicDatabase1x || dynamicDatabase1x.trim() === "") {
+        if (!dynamicDatabase1x || dynamicDatabase1x.trim() === "" || isEnvironmentVariable(dynamicDatabase1x)) {
             return null; // Non intervenire
         }
         return dynamicDatabase1x.trim(); // Accetta qualsiasi valore non vuoto
     }
     function getDynamicUsername1x(dynamicUsername1x) {
-        if (!dynamicUsername1x || dynamicUsername1x.trim() === "") {
+        if (!dynamicUsername1x || dynamicUsername1x.trim() === "" || isEnvironmentVariable(dynamicUsername1x)) {
             return null; // Non intervenire
         }
         return dynamicUsername1x.trim(); // Accetta qualsiasi valore non vuoto
     }
     function getDynamicPassword1x(dynamicPassword1x) {
-        if (!dynamicPassword1x || dynamicPassword1x.trim() === "") {
+        if (!dynamicPassword1x || dynamicPassword1x.trim() === "" || isEnvironmentVariable(dynamicPassword1x)) {
             return null; // Non intervenire
         }
         return dynamicPassword1x.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
+    }
+
+    /**
+     * LucaT: Helper functions per gestire gli override dei parametri del nodo OUT
+     */
+    function getDynamicMeasurement(dynamicMeasurement) {
+        if (!dynamicMeasurement || dynamicMeasurement.trim() === "" || isEnvironmentVariable(dynamicMeasurement)) {
+            return null; // Non intervenire
+        }
+        return dynamicMeasurement.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicDatabase(dynamicDatabase) {
+        if (!dynamicDatabase || dynamicDatabase.trim() === "" || isEnvironmentVariable(dynamicDatabase)) {
+            return null; // Non intervenire
+        }
+        return dynamicDatabase.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicRetentionPolicy(dynamicRetentionPolicy) {
+        if (!dynamicRetentionPolicy || dynamicRetentionPolicy.trim() === "" || isEnvironmentVariable(dynamicRetentionPolicy)) {
+            return null; // Non intervenire
+        }
+        return dynamicRetentionPolicy.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicOrg(dynamicOrg) {
+        if (!dynamicOrg || dynamicOrg.trim() === "" || isEnvironmentVariable(dynamicOrg)) {
+            return null; // Non intervenire
+        }
+        return dynamicOrg.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicBucket(dynamicBucket) {
+        if (!dynamicBucket || dynamicBucket.trim() === "" || isEnvironmentVariable(dynamicBucket)) {
+            return null; // Non intervenire
+        }
+        return dynamicBucket.trim(); // Accetta qualsiasi valore non vuoto
+    }
+    function getDynamicPrecision(dynamicPrecision) {
+        if (!dynamicPrecision || dynamicPrecision.trim() === "" || isEnvironmentVariable(dynamicPrecision)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = dynamicPrecision.trim();
+        // Verifica che sia un valore di precisione valido
+        const validPrecisions = ['ns', 'us', 'ms', 's', 'n', 'u', 'm', 'h', 'd', 'w'];
+        if (validPrecisions.includes(trimmedValue)) {
+            return trimmedValue;
+        }
+        return null; // Non intervenire se non è un valore valido
+    }
+
+    /**
+     * LucaT - Helper function per capire se un valore è una variabile di ambiente
+     */    
+    function isEnvironmentVariable(value) {
+        // Controlla se il valore è una variabile di ambiente
+        // per evitare che ci siano variabilidi ambiente non risolte
+        if (value && typeof value === 'string' && value.startsWith("${") && value.endsWith("}")) {
+            // scrive un log di debug per c'è una variabile di ambiente non risolta
+            RED.log.debug(`Detected environment variable NOT SOLVED: ${value}`);
+            return true; // È una variabile di ambiente
+        } else {
+            return false; // Non è una variabile di ambiente
+        }
     }
 
     /**
@@ -374,7 +433,7 @@ module.exports = function (RED) {
             });
             // LucaT: DA TESTARE (FINE) Gestione override delle credenziali per VERSION_1X
 
-        } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {            
+        } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
             // LucaT: Gestione override delle credenziali prottette
             let token;
@@ -554,6 +613,13 @@ module.exports = function (RED) {
         this.retentionPolicyV18Flux = n.retentionPolicyV18Flux;
         this.org = n.org;
         this.bucket = n.bucket;
+        // LucaT: Dynamic Properties per nodo OUT
+        this.dynamicMeasurement = n.dynamicMeasurement;
+        this.dynamicDatabase = n.dynamicDatabase;
+        this.dynamicRetentionPolicyV18Flux = n.dynamicRetentionPolicyV18Flux;
+        this.dynamicOrg = n.dynamicOrg;
+        this.dynamicBucket = n.dynamicBucket;
+        this.dynamicPrecision = n.dynamicPrecision;
 
         // LucaT: Aggiungi contatore delle operazioni
         this.writeCount = 0;
