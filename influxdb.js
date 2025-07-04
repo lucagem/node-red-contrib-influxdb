@@ -724,9 +724,6 @@ module.exports = function (RED) {
     /**
      * Output node to write to multiple InfluxDb measurements
      */
-    /**
-     * Output node to write to multiple InfluxDb measurements
-     */
     function InfluxBatchNode(n) {
         RED.nodes.createNode(this, n);
         this.influxdb = n.influxdb;
@@ -741,9 +738,46 @@ module.exports = function (RED) {
         this.org = n.org;
         this.bucket = n.bucket;
 
-        // LucaT: Dynamic Properties per nodo BATCH - gestione override (se necessari)
-        // Per ora il nodo BATCH non ha proprietà dinamiche specifiche nell'HTML,
-        // ma se servissero in futuro, la logica sarebbe simile al nodo OUT
+        // LucaT: Dynamic Properties per nodo BATCH - gestione override
+        const dynamicPrecisionBatch = getDynamicPrecision(n.dynamicPrecisionBatch);
+        const dynamicRetentionPolicyBatch = getDynamicStringNotEmpty(n.dynamicRetentionPolicyBatch);
+        const dynamicDatabaseBatch = getDynamicStringNotEmpty(n.dynamicDatabaseBatch);
+        const dynamicOrgBatch = getDynamicStringNotEmpty(n.dynamicOrgBatch);
+        const dynamicBucketBatch = getDynamicStringNotEmpty(n.dynamicBucketBatch);
+
+        // LucaT: Applica gli override se disponibili
+        if (dynamicPrecisionBatch !== null) {
+            // Per 1.x usa precision, per 1.8-flux e 2.0 usa precisionV18FluxV20
+            if (this.influxdbConfig.influxdbVersion === VERSION_1X) {
+                RED.log.info(`InfluxDb BATCH dynamic override Precision (1.x) changed from [${this.precision}] to [${dynamicPrecisionBatch}]`);
+                this.precision = dynamicPrecisionBatch;
+            } else if (this.influxdbConfig.influxdbVersion === VERSION_18_FLUX || this.influxdbConfig.influxdbVersion === VERSION_20) {
+                RED.log.info(`InfluxDb BATCH dynamic override PrecisionV18FluxV20 changed from [${this.precisionV18FluxV20}] to [${dynamicPrecisionBatch}]`);
+                this.precisionV18FluxV20 = dynamicPrecisionBatch;
+            }
+        }
+        if (dynamicRetentionPolicyBatch !== null) {
+            // Per 1.x usa retentionPolicy, per 1.8-flux usa retentionPolicyV18Flux
+            if (this.influxdbConfig.influxdbVersion === VERSION_1X) {
+                RED.log.info(`InfluxDb BATCH dynamic override RetentionPolicy (1.x) changed from [${this.retentionPolicy}] to [${dynamicRetentionPolicyBatch}]`);
+                this.retentionPolicy = dynamicRetentionPolicyBatch;
+            } else if (this.influxdbConfig.influxdbVersion === VERSION_18_FLUX) {
+                RED.log.info(`InfluxDb BATCH dynamic override RetentionPolicyV18Flux changed from [${this.retentionPolicyV18Flux}] to [${dynamicRetentionPolicyBatch}]`);
+                this.retentionPolicyV18Flux = dynamicRetentionPolicyBatch;
+            }
+        }
+        if (dynamicDatabaseBatch !== null) {
+            RED.log.info(`InfluxDb BATCH dynamic override Database changed from [${this.database}] to [${dynamicDatabaseBatch}]`);
+            this.database = dynamicDatabaseBatch;
+        }
+        if (dynamicOrgBatch !== null) {
+            RED.log.info(`InfluxDb BATCH dynamic override Organization changed from [${this.org}] to [${dynamicOrgBatch}]`);
+            this.org = dynamicOrgBatch;
+        }
+        if (dynamicBucketBatch !== null) {
+            RED.log.info(`InfluxDb BATCH dynamic override Bucket changed from [${this.bucket}] to [${dynamicBucketBatch}]`);
+            this.bucket = dynamicBucketBatch;
+        }
 
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
@@ -759,11 +793,11 @@ module.exports = function (RED) {
             // LucaT: Aggiunta variabile per conteggio operazioni di scrittura
             node.writeCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
-            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+            var connectionEnabled = updateNodeStatus(node, node.influxdbConfig, node.writeCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
+                if (!connectionEnabled) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -813,11 +847,11 @@ module.exports = function (RED) {
             // LucaT: Aggiunta variabile per conteggio operazioni di scrittura
             node.writeCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
-            updateNodeStatus(node, node.influxdbConfig, node.writeCount);
+            var connectionEnabled = updateNodeStatus(node, node.influxdbConfig, node.writeCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
+                if (!connectionEnabled) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -832,26 +866,23 @@ module.exports = function (RED) {
                 });
 
                 // LucaT: Gestione dinamica bucket e org per supportare override
+                // IMPORTANTE: Questa logica deve essere dentro l'input handler per garantire
+                // che gli override dinamici siano già stati applicati
                 let bucket;
                 let org;
                 if (version === VERSION_18_FLUX) {
                     // Per 1.8-flux, il bucket è sempre database/retention
+                    // Usa i valori potenzialmente overridden
                     let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
                     bucket = `${node.database}/${retentionPolicy}`;
                     org = '';
-                    // LucaT: Log dettagliato per debug
-                    RED.log.info(`InfluxDB 1.8-flux BATCH: node.database=[${node.database}], retentionPolicy=[${retentionPolicy}], bucket=[${bucket}], org=[${org}]`);
                 } else {
                     // Per 2.0, usa i valori (potenzialmente overridden)
                     bucket = node.bucket;
                     org = node.org;
-                    // LucaT: Log dettagliato per debug  
-                    RED.log.info(`InfluxDB 2.0 BATCH: bucket=[${bucket}], org=[${org}]`);
                 }
-
                 // LucaT: Crea un nuovo writeApi ad ogni input con i parametri aggiornati
                 var client = node.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
-
                 if (_.isArray(msg.payload) && msg.payload.length > 0) {
 
                     msg.payload.forEach(element => {
@@ -904,9 +935,6 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("influxdb batch", InfluxBatchNode);
 
-    /**
-     * Input node to make queries to influxdb
-     */
     /**
      * Input node to make queries to influxdb
      */
