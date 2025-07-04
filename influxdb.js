@@ -704,12 +704,14 @@ module.exports = function (RED) {
                     let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
                     bucket = `${node.database}/${retentionPolicy}`;
                     org = '';
-                    RED.log.debug(`InfluxDB 1.8-flux: Using bucket [${bucket}] with org [${org}]`);
+                    // LucaT: Log dettagliato per debug
+                    RED.log.info(`InfluxDB 1.8-flux OUT: node.database=[${node.database}], retentionPolicy=[${retentionPolicy}], bucket=[${bucket}], org=[${org}]`);
                 } else {
                     // Per 2.0, usa i valori (potenzialmente overridden)
                     bucket = node.bucket;
                     org = node.org;
-                    RED.log.debug(`InfluxDB 2.0: Using bucket [${bucket}] with org [${org}]`);
+                    // LucaT: Log dettagliato per debug
+                    RED.log.info(`InfluxDB 2.0 OUT: bucket=[${bucket}], org=[${org}]`);
                 }
 
                 // LucaT: Crea il writeApi ad ogni input con i parametri aggiornati
@@ -717,8 +719,7 @@ module.exports = function (RED) {
 
                 writePoints(msg, node, done);
             });
-        }
-        // LucaT: Ascolta le modifiche alla configurazione
+        }        // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
         });
@@ -844,10 +845,14 @@ module.exports = function (RED) {
                     let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
                     bucket = `${node.database}/${retentionPolicy}`;
                     org = '';
+                    // LucaT: Log dettagliato per debug
+                    RED.log.info(`InfluxDB 1.8-flux BATCH: node.database=[${node.database}], retentionPolicy=[${retentionPolicy}], bucket=[${bucket}], org=[${org}]`);
                 } else {
                     // Per 2.0, usa i valori (potenzialmente overridden)
                     bucket = node.bucket;
                     org = node.org;
+                    // LucaT: Log dettagliato per debug  
+                    RED.log.info(`InfluxDB 2.0 BATCH: bucket=[${bucket}], org=[${org}]`);
                 }
 
                 // LucaT: Crea un nuovo writeApi ad ogni input con i parametri aggiornati
@@ -898,7 +903,6 @@ module.exports = function (RED) {
                 }
             });
         }
-
         // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
