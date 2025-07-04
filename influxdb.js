@@ -938,6 +938,9 @@ module.exports = function (RED) {
     /**
      * Input node to make queries to influxdb
      */
+    /**
+         * Input node to make queries to influxdb
+         */
     function InfluxInNode(n) {
         RED.nodes.createNode(this, n);
         this.influxdb = n.influxdb;
@@ -948,9 +951,34 @@ module.exports = function (RED) {
         this.influxdbConfig = RED.nodes.getNode(this.influxdb);
         this.org = n.org;
 
-        // LucaT: Dynamic Properties per nodo IN - gestione override (se necessari)
-        // Il nodo IN al momento non ha proprietà dinamiche specifiche nell'HTML,
-        // ma potremmo aggiungere override per query, organization, ecc. se necessario
+        // LucaT: Dynamic Properties per nodo IN - gestione override
+        const dynamicQueryIn = getDynamicStringNotEmpty(n.dynamicQueryIn);
+        const dynamicRawOutputIn = getDynamicBoolean(n.dynamicRawOutputIn);
+        const dynamicPrecisionIn = getDynamicPrecision(n.dynamicPrecisionIn);
+        const dynamicRetentionPolicyIn = getDynamicStringNotEmpty(n.dynamicRetentionPolicyIn);
+        const dynamicOrgIn = getDynamicStringNotEmpty(n.dynamicOrgIn);
+
+        // LucaT: Applica gli override se disponibili
+        if (dynamicQueryIn !== null) {
+            RED.log.info(`InfluxDb IN dynamic override Query changed from [${this.query}] to [${dynamicQueryIn}]`);
+            this.query = dynamicQueryIn;
+        }
+        if (dynamicRawOutputIn !== null) {
+            RED.log.info(`InfluxDb IN dynamic override RawOutput changed from [${this.rawOutput}] to [${dynamicRawOutputIn}]`);
+            this.rawOutput = dynamicRawOutputIn;
+        }
+        if (dynamicPrecisionIn !== null) {
+            RED.log.info(`InfluxDb IN dynamic override Precision changed from [${this.precision}] to [${dynamicPrecisionIn}]`);
+            this.precision = dynamicPrecisionIn;
+        }
+        if (dynamicRetentionPolicyIn !== null) {
+            RED.log.info(`InfluxDb IN dynamic override RetentionPolicy changed from [${this.retentionPolicy}] to [${dynamicRetentionPolicyIn}]`);
+            this.retentionPolicy = dynamicRetentionPolicyIn;
+        }
+        if (dynamicOrgIn !== null) {
+            RED.log.info(`InfluxDb IN dynamic override Organization changed from [${this.org}] to [${dynamicOrgIn}]`);
+            this.org = dynamicOrgIn;
+        }
 
         if (!this.influxdbConfig) {
             this.error(RED._("influxdb.errors.missingconfig"));
@@ -965,11 +993,11 @@ module.exports = function (RED) {
             // LucaT: Aggiunta variabile per conteggio operazioni di lettura
             node.readCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
-            updateNodeStatus(node, node.influxdbConfig, node.readCount);
+            var connectionEnabled = updateNodeStatus(node, node.influxdbConfig, node.readCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
+                if (!connectionEnabled) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -989,6 +1017,7 @@ module.exports = function (RED) {
                 var precision;
                 var retentionPolicy;
 
+                // LucaT: Supporta override dinamico dei parametri anche via messaggio
                 query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
                     updateNodeStatus(node, node.influxdbConfig, node.readCount);
@@ -1027,18 +1056,20 @@ module.exports = function (RED) {
 
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
             // LucaT: Gestione dinamica dell'organizzazione per supportare override
-            let org = version === VERSION_20 ? this.org : ''
+            // IMPORTANTE: Questa logica deve essere dentro l'input handler per garantire
+            // che gli override dinamici siano già stati applicati
+            let org = version === VERSION_20 ? this.org : '';
             this.client = this.influxdbConfig.client.getQueryApi(org);
             var node = this;
 
             // LucaT: Aggiunta variabile per conteggio operazioni di lettura
             node.readCount = 0;
             // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
-            updateNodeStatus(node, node.influxdbConfig, node.readCount);
+            var connectionEnabled = updateNodeStatus(node, node.influxdbConfig, node.readCount);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
+                if (!connectionEnabled) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
@@ -1052,13 +1083,19 @@ module.exports = function (RED) {
                     text: `reading (${node.readCount})`
                 });
 
+                // LucaT: Supporta override dinamico della query anche via messaggio
                 var query = msg.hasOwnProperty('query') ? msg.query : node.query;
                 if (!query) {
                     updateNodeStatus(node, node.influxdbConfig, node.readCount);
                     return done(RED._("influxdb.errors.noquery"));
                 }
+
+                // LucaT: Per versione 2.0, ricrea il client se l'organizzazione è stata overridden
+                let currentOrg = version === VERSION_20 ? node.org : '';
+                let currentClient = node.influxdbConfig.client.getQueryApi(currentOrg);
+
                 var output = [];
-                node.client.queryRows(query, {
+                currentClient.queryRows(query, {
                     next(row, tableMeta) {
                         var o = tableMeta.toObject(row)
                         output.push(o);
