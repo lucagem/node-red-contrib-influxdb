@@ -574,8 +574,8 @@
 
         <!-- Measurement dinamico -->
         <div class="form-row">
-            <label for="node-input-dynamicMeasurement"><i class="fa fa-rss"></i> Measurement</label>
-            <input type="text" id="node-input-dynamicMeasurement" placeholder="sensors | ${IDB_MEASUREMENT_OUT}">
+            <label for="node-input-dynamicMeasurementOut"><i class="fa fa-rss"></i> Measurement</label>
+            <input type="text" id="node-input-dynamicMeasurementOut" placeholder="sensors | ${IDB_MEASUREMENT_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -586,8 +586,8 @@
         <!-- Precision dinamica -->
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
         <div class="form-row">
-            <label for="node-input-dynamicPrecision"><i class="fa fa-clock-o"></i> Time Precision</label>
-            <input type="text" id="node-input-dynamicPrecision" placeholder="ms | ns | s | ${IDB_PRECISION_OUT}">
+            <label for="node-input-dynamicPrecisionOut"><i class="fa fa-clock-o"></i> Time Precision</label>
+            <input type="text" id="node-input-dynamicPrecisionOut" placeholder="ms | ns | s | ${IDB_PRECISION_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -607,8 +607,8 @@
         <!-- Database dinamico (per versione 1.8-flux) -->
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
         <div class="form-row">
-            <label for="node-input-dynamicDatabase"><i class="fa fa-database"></i> Database (1.8-flux)</label>
-            <input type="text" id="node-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE_OUT}">
+            <label for="node-input-dynamicDatabaseOut"><i class="fa fa-database"></i> Database (1.8-flux)</label>
+            <input type="text" id="node-input-dynamicDatabaseOut" placeholder="mydb | ${IDB_DATABASE_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -618,9 +618,9 @@
 
         <!-- Retention Policy dinamico (per versione 1.8-flux) -->
         <div class="form-row">
-            <label for="node-input-dynamicRetentionPolicyV18Flux"><i class="fa fa-gavel"></i> Retention Policy
+            <label for="node-input-dynamicRetentionPolicyOut"><i class="fa fa-gavel"></i> Retention Policy
                 (1.x/F)</label>
-            <input type="text" id="node-input-dynamicRetentionPolicyV18Flux"
+            <input type="text" id="node-input-dynamicRetentionPolicyOut"
                 placeholder="autogen | ${IDB_RETENTION_POLICY_OUT}">
         </div>
         <div class="form-tips"
@@ -632,8 +632,8 @@
         <!-- Organization dinamica (per versione 2.0) -->
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
         <div class="form-row">
-            <label for="node-input-dynamicOrg"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
-            <input type="text" id="node-input-dynamicOrg" placeholder="my-org | ${IDB_ORGANIZATION_OUT}">
+            <label for="node-input-dynamicOrgOut"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
+            <input type="text" id="node-input-dynamicOrgOut" placeholder="my-org | ${IDB_ORGANIZATION_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -643,8 +643,8 @@
 
         <!-- Bucket dinamico (per versione 2.0) -->
         <div class="form-row">
-            <label for="node-input-dynamicBucket"><i class="fa fa-database"></i> Bucket (2.0)</label>
-            <input type="text" id="node-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET_OUT}">
+            <label for="node-input-dynamicBucketOut"><i class="fa fa-database"></i> Bucket (2.0)</label>
+            <input type="text" id="node-input-dynamicBucketOut" placeholder="my-bucket | ${IDB_BUCKET_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -701,12 +701,12 @@
             // LucaT: Dynamic Properties per nodo OUT
             dynamicEnabled: { value: "" },
             dynamicVersion: { value: "" },
-            dynamicMeasurement: { value: "" },
-            dynamicDatabase: { value: "" },
-            dynamicRetentionPolicyV18Flux: { value: "" },
-            dynamicOrg: { value: "" },
-            dynamicBucket: { value: "" },
-            dynamicPrecision: { value: "" },
+            dynamicMeasurementOut: { value: "" },
+            dynamicDatabaseOut: { value: "" },
+            dynamicRetentionPolicyOut: { value: "" },
+            dynamicOrgOut: { value: "" },
+            dynamicBucketOut: { value: "" },
+            dynamicPrecisionOut: { value: "" },
             database: {
                 value: "database",
                 validate: function (db) {
@@ -771,12 +771,12 @@
             }, 0);
 
             // Popola i campi dinamici con i valori salvati
-            $("#node-input-dynamicMeasurement").val(this.dynamicMeasurement || "");
-            $("#node-input-dynamicDatabase").val(this.dynamicDatabase || "");
-            $("#node-input-dynamicRetentionPolicyV18Flux").val(this.dynamicRetentionPolicyV18Flux || "");
-            $("#node-input-dynamicOrg").val(this.dynamicOrg || "");
-            $("#node-input-dynamicBucket").val(this.dynamicBucket || "");
-            $("#node-input-dynamicPrecision").val(this.dynamicPrecision || "");
+            $("#node-input-dynamicMeasurementOut").val(this.dynamicMeasurementOut || "");
+            $("#node-input-dynamicDatabaseOut").val(this.dynamicDatabaseOut || "");
+            $("#node-input-dynamicRetentionPolicyOut").val(this.dynamicRetentionPolicyOut || "");
+            $("#node-input-dynamicOrgOut").val(this.dynamicOrgOut || "");
+            $("#node-input-dynamicBucketOut").val(this.dynamicBucketOut || "");
+            $("#node-input-dynamicPrecisionOut").val(this.dynamicPrecisionOut || "");
             // ------------ LucaT: Inizializzazione tab END            
             $("#advanced-options-checkbox").change(function () {
                 if ($('#advanced-options-checkbox').is(":checked")) {
@@ -848,12 +848,12 @@
         },
         oneditsave: function () {
             // LucaT: Salva le proprietà dinamiche del nodo OUT
-            this.dynamicMeasurement = $("#node-input-dynamicMeasurement").val();
-            this.dynamicDatabase = $("#node-input-dynamicDatabase").val();
-            this.dynamicRetentionPolicyV18Flux = $("#node-input-dynamicRetentionPolicyV18Flux").val();
-            this.dynamicOrg = $("#node-input-dynamicOrg").val();
-            this.dynamicBucket = $("#node-input-dynamicBucket").val();
-            this.dynamicPrecision = $("#node-input-dynamicPrecision").val();
+            this.dynamicMeasurementOut = $("#node-input-dynamicMeasurementOut").val();
+            this.dynamicDatabaseOut = $("#node-input-dynamicDatabaseOut").val();
+            this.dynamicRetentionPolicyOut = $("#node-input-dynamicRetentionPolicyOut").val();
+            this.dynamicOrgOut = $("#node-input-dynamicOrgOut").val();
+            this.dynamicBucketOut = $("#node-input-dynamicBucketOut").val();
+            this.dynamicPrecisionOut = $("#node-input-dynamicPrecisionOut").val();
 
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {

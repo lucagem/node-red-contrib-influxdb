@@ -16,9 +16,7 @@ module.exports = function (RED) {
         if (!dynamicVersion || dynamicVersion.trim() === "" || isEnvironmentVariable(dynamicVersion)) {
             return null; // Non intervenire
         }
-
         const trimmedValue = dynamicVersion.trim();
-
         // Mappa i valori alle versioni corrette
         switch (trimmedValue) {
             case "1":
@@ -32,166 +30,74 @@ module.exports = function (RED) {
                 return null;
         }
     }
-
     /**
-     * LucaT: Helper functions per gestire gli override dei parametri Version 2.0
+     * Helper per precision values
      */
-    function getDynamicUrl2x(dynamicUrl2x) {
-        if (!dynamicUrl2x || dynamicUrl2x.trim() === "" || isEnvironmentVariable(dynamicUrl2x)) {
+    function getDynamicPrecision(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
             return null; // Non intervenire
         }
-        const trimmedValue = dynamicUrl2x.trim();
-        // Verifica che sia un URL valido
-        if (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) {
-            return trimmedValue;
-        }
-        return null; // Non intervenire se non è un URL valido
-    }
-    function getDynamicToken2x(dynamicToken2x) {
-        if (!dynamicToken2x || dynamicToken2x.trim() === "" || isEnvironmentVariable(dynamicToken2x)) {
-            return null; // Non intervenire
-        }
-        return dynamicToken2x.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicTimeout2x(dynamicTimeout2x) {
-        if (!dynamicTimeout2x || dynamicTimeout2x.trim() === "" || isEnvironmentVariable(dynamicTimeout2x)) {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicTimeout2x.trim();
-        // Verifica che sia un numero valido
-        const timeoutValue = parseInt(trimmedValue);
-        if (!isNaN(timeoutValue) && timeoutValue > 0) {
-            return trimmedValue;
-        }
-        return null; // Non intervenire se non è un numero valido
-    }
-
-    /**
-     * LucaT: Helper functions per gestire gli override dei parametri Version 1.8-flux  
-     */
-    function getDynamicUrl18Flux(dynamicUrl18Flux) {
-        if (!dynamicUrl18Flux || dynamicUrl18Flux.trim() === "" || isEnvironmentVariable(dynamicUrl18Flux)) {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicUrl18Flux.trim();
-        // Verifica che sia un URL valido
-        if (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) {
-            return trimmedValue;
-        }
-        return null; // Non intervenire se non è un URL valido
-    }
-    function getDynamicUsername18Flux(dynamicUsername18Flux) {
-        if (!dynamicUsername18Flux || dynamicUsername18Flux.trim() === "" || isEnvironmentVariable(dynamicUsername18Flux)) {
-            return null; // Non intervenire
-        }
-        return dynamicUsername18Flux.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicPassword18Flux(dynamicPassword18Flux) {
-        if (!dynamicPassword18Flux || dynamicPassword18Flux.trim() === "" || isEnvironmentVariable(dynamicPassword18Flux)) {
-            return null; // Non intervenire
-        }
-        return dynamicPassword18Flux.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
-    }
-
-    /**
-     * LucaT: Helper functions per gestire gli override dei parametri Version 1.0
-     */
-    function getDynamicHostname1x(dynamicHostname1x) {
-        if (!dynamicHostname1x || dynamicHostname1x.trim() === "" || isEnvironmentVariable(dynamicHostname1x)) {
-            return null; // Non intervenire
-        }
-        return dynamicHostname1x.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicPort1x(dynamicPort1x) {
-        if (!dynamicPort1x || dynamicPort1x.trim() === "" || isEnvironmentVariable(dynamicPort1x)) {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicPort1x.trim();
-        // Verifica che sia un numero valido
-        const portValue = parseInt(trimmedValue);
-        if (!isNaN(portValue) && portValue > 0 && portValue <= 65535) {
-            return portValue; // Restituisce come numero per InfluxDB 1.0
-        }
-        return null; // Non intervenire se non è un numero valido
-    }
-    function getDynamicDatabase1x(dynamicDatabase1x) {
-        if (!dynamicDatabase1x || dynamicDatabase1x.trim() === "" || isEnvironmentVariable(dynamicDatabase1x)) {
-            return null; // Non intervenire
-        }
-        return dynamicDatabase1x.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicUsername1x(dynamicUsername1x) {
-        if (!dynamicUsername1x || dynamicUsername1x.trim() === "" || isEnvironmentVariable(dynamicUsername1x)) {
-            return null; // Non intervenire
-        }
-        return dynamicUsername1x.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicPassword1x(dynamicPassword1x) {
-        if (!dynamicPassword1x || dynamicPassword1x.trim() === "" || isEnvironmentVariable(dynamicPassword1x)) {
-            return null; // Non intervenire
-        }
-        return dynamicPassword1x.trim(); // Accetta qualsiasi valore (anche stringa vuota dopo trim)
-    }
-
-    /**
-     * LucaT: Helper functions per gestire gli override dei parametri del nodo OUT
-     */
-    function getDynamicMeasurement(dynamicMeasurement) {
-        if (!dynamicMeasurement || dynamicMeasurement.trim() === "" || isEnvironmentVariable(dynamicMeasurement)) {
-            return null; // Non intervenire
-        }
-        return dynamicMeasurement.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicDatabase(dynamicDatabase) {
-        if (!dynamicDatabase || dynamicDatabase.trim() === "" || isEnvironmentVariable(dynamicDatabase)) {
-            return null; // Non intervenire
-        }
-        return dynamicDatabase.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicRetentionPolicy(dynamicRetentionPolicy) {
-        if (!dynamicRetentionPolicy || dynamicRetentionPolicy.trim() === "" || isEnvironmentVariable(dynamicRetentionPolicy)) {
-            return null; // Non intervenire
-        }
-        return dynamicRetentionPolicy.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicOrg(dynamicOrg) {
-        if (!dynamicOrg || dynamicOrg.trim() === "" || isEnvironmentVariable(dynamicOrg)) {
-            return null; // Non intervenire
-        }
-        return dynamicOrg.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicBucket(dynamicBucket) {
-        if (!dynamicBucket || dynamicBucket.trim() === "" || isEnvironmentVariable(dynamicBucket)) {
-            return null; // Non intervenire
-        }
-        return dynamicBucket.trim(); // Accetta qualsiasi valore non vuoto
-    }
-    function getDynamicPrecision(dynamicPrecision) {
-        if (!dynamicPrecision || dynamicPrecision.trim() === "" || isEnvironmentVariable(dynamicPrecision)) {
-            return null; // Non intervenire
-        }
-        const trimmedValue = dynamicPrecision.trim();
-        // Verifica che sia un valore di precisione valido
+        const trimmedValue = value.trim();
         const validPrecisions = ['ns', 'us', 'ms', 's', 'n', 'u', 'm', 'h', 'd', 'w'];
-        if (validPrecisions.includes(trimmedValue)) {
-            return trimmedValue;
-        }
-        return null; // Non intervenire se non è un valore valido
+        return validPrecisions.includes(trimmedValue) ? trimmedValue : null;
     }
 
     /**
      * LucaT - Helper function per capire se un valore è una variabile di ambiente
-     */    
+     */
     function isEnvironmentVariable(value) {
         // Controlla se il valore è una variabile di ambiente
         // per evitare che ci siano variabilidi ambiente non risolte
         if (value && typeof value === 'string' && value.startsWith("${") && value.endsWith("}")) {
             // scrive un log di debug per c'è una variabile di ambiente non risolta
-            RED.log.debug(`Detected environment variable NOT SOLVED: ${value}`);
+            RED.log.debug(`Detected environment variable NOT SOLVED: [${value}`);
             return true; // È una variabile di ambiente
         } else {
             return false; // Non è una variabile di ambiente
         }
+    }
+
+    /**
+     * LucaT: Helper functions generici per gestire gli override dei parametri dinamici
+     */
+    function getDynamicStringNotEmpty(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = value.trim();
+        return trimmedValue.length > 0 ? trimmedValue : null;
+    }
+    function getDynamicPositiveInteger(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = value.trim();
+        const intValue = parseInt(trimmedValue);
+        return !isNaN(intValue) && intValue > 0 ? intValue : null;
+    }
+    function getDynamicPort(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = value.trim();
+        const portValue = parseInt(trimmedValue);
+        return !isNaN(portValue) && portValue > 0 && portValue <= 65535 ? portValue : null;
+    }
+    function getDynamicUrl(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = value.trim();
+        return (trimmedValue.startsWith("http://") || trimmedValue.startsWith("https://")) ? trimmedValue : null;
+    }
+    function getDynamicBoolean(value) {
+        if (!value || value.trim() === "" || isEnvironmentVariable(value)) {
+            return null; // Non intervenire
+        }
+        const trimmedValue = value.trim().toLowerCase();
+        if (["true", "1"].includes(trimmedValue)) return true;
+        if (["false", "0"].includes(trimmedValue)) return false;
+        return null; // Valore non valido
     }
 
     /**
@@ -245,7 +151,6 @@ module.exports = function (RED) {
     function showTemporaryError(node, client, error, operationCount) {
         // Mostra immediatamente l'errore
         updateNodeStatus(node, client, operationCount, error);
-
         // Dopo 3 secondi torna allo stato normale
         setTimeout(() => {
             updateNodeStatus(node, client, operationCount);
@@ -259,7 +164,6 @@ module.exports = function (RED) {
         var influxError = {
             errorMessage: error.message || error.toString() || "Unknown error"
         };
-
         // Se l'errore ha un response HTTP (versione 1.x), aggiungi lo status code
         if (error.res && error.res.statusCode) {
             influxError.statusCode = error.res.statusCode;
@@ -270,7 +174,6 @@ module.exports = function (RED) {
             // Default status code per errori generici
             influxError.statusCode = 503;
         }
-
         return influxError;
     }
 
@@ -282,10 +185,8 @@ module.exports = function (RED) {
         if (!dynamicEnabled || dynamicEnabled.trim() === '') {
             return true;
         }
-
         // Converte il valore in stringa e rimuove spazi
         var value = String(dynamicEnabled).trim().toLowerCase();
-
         // Controlla se il valore indica disabilitazione
         return !(value === 'false' || value === '0');
     }
@@ -309,8 +210,18 @@ module.exports = function (RED) {
             n.influxdbVersion = VERSION_1X;
         }
 
-        // LucaT: Gestione version override (INIZIO) - sostituisce il valore originale se necessario
         const dynamicVersionOverride = getDynamicVersion(n.dynamicVersion);
+        const dynamicHostnameOverride = getDynamicStringNotEmpty(n.dynamicHostname);
+        const dynamicPortOverride = getDynamicPort(n.dynamicPort);
+        const dynamicUrlOverride = getDynamicUrl(n.dynamicUrl);
+        const dynamicDatabaseOverride = getDynamicStringNotEmpty(n.dynamicDatabase);
+        const dynamicUsernameOverride = getDynamicStringNotEmpty(n.dynamicUsername);
+        const dynamicPasswordOverride = getDynamicStringNotEmpty(n.dynamicPassword); 
+        const dynamicTokenOverride = getDynamicStringNotEmpty(n.dynamicToken);
+        const dynamicTimeoutOverride = getDynamicPositiveInteger(n.dynamicTimeout);
+        const dynamicVerifyCertificateOverride = getDynamicBoolean(n.dynamicVerifyCertificate)
+
+        // LucaT: Gestione version override (INIZIO) - sostituisce il valore originale se necessario
         if (dynamicVersionOverride !== null) {
             const originalVersion = n.influxdbVersion;
             n.influxdbVersion = dynamicVersionOverride;
@@ -319,75 +230,64 @@ module.exports = function (RED) {
         }
         if (n.influxdbVersion === VERSION_1X) {
             // LucaT: Gestione override parametri specifici per Version 1.0 - DA TESTARE
-            // Override Hostname per 1.0
-            const dynamicHostname1xOverride = getDynamicHostname1x(n.dynamicHostname1x);
-            if (dynamicHostname1xOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Hostname (1.0) changed from [${this.hostname}] to [${dynamicHostname1xOverride}]`);
-                this.hostname = dynamicHostname1xOverride;
+            // Override Hostname per 1.0            
+            if (dynamicHostnameOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Hostname (1.0) changed from [${this.hostname}] to [${dynamicHostnameOverride}]`);
+                this.hostname = dynamicHostnameOverride;
             }
             // Override Port per 1.0
-            const dynamicPort1xOverride = getDynamicPort1x(n.dynamicPort1x);
-            if (dynamicPort1xOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Port (1.0) changed from [${this.port}] to [${dynamicPort1xOverride}]`);
-                this.port = dynamicPort1xOverride;
+            if (dynamicPortOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Port (1.0) changed from [${this.port}] to [${dynamicPortOverride}]`);
+                this.port = dynamicPortOverride;
             }
-            // Override Database per 1.0
-            const dynamicDatabase1xOverride = getDynamicDatabase1x(n.dynamicDatabase1x);
-            if (dynamicDatabase1xOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Database (1.0) changed from [${this.database}] to [${dynamicDatabase1xOverride}]`);
-                this.database = dynamicDatabase1xOverride;
+            // Override Database per 1.0            
+            if (dynamicDatabaseOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Database (1.0) changed from [${this.database}] to [${dynamicDatabaseOverride}]`);
+                this.database = dynamicDatabaseOverride;
             }
             // Override Username per 1.0
-            const dynamicUsername1xOverride = getDynamicUsername1x(n.dynamicUsername1x);
-            if (dynamicUsername1xOverride !== null) {
+            if (dynamicUsernameOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Username (1.0) changed (hidden for security)`);
                 // Lo username verrà gestito nella sezione credentials più avanti
             }
             // Override Password per 1.0
-            const dynamicPassword1xOverride = getDynamicPassword1x(n.dynamicPassword1x);
-            if (dynamicPassword1xOverride !== null) {
+            if (dynamicPasswordOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Password (1.0) changed (hidden for security)`);
                 // La password verrà gestita nella sezione credentials più avanti
             }
         } else if (n.influxdbVersion === VERSION_18_FLUX) {
             // LucaT: Gestione override parametri specifici per Version 1.8-flux
             // Override URL per 1.8-flux
-            const dynamicUrl18FluxOverride = getDynamicUrl18Flux(n.dynamicUrl18Flux);
-            if (dynamicUrl18FluxOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override URL (1.8-flux) changed from [${n.url}] to [${dynamicUrl18FluxOverride}]`);
-                n.url = dynamicUrl18FluxOverride;
+            if (dynamicUrlOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override URL (1.8-flux) changed from [${n.url}] to [${dynamicUrlOverride}]`);
+                n.url = dynamicUrlOverride;
             }
             // Override Username per 1.8-flux
-            const dynamicUsername18FluxOverride = getDynamicUsername18Flux(n.dynamicUsername18Flux);
-            if (dynamicUsername18FluxOverride !== null) {
+            if (dynamicUsernameOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Username (1.8-flux) changed (hidden for security)`);
                 // Lo username verrà gestito nella sezione credentials più avanti
             }
             // Override Password per 1.8-flux
-            const dynamicPassword18FluxOverride = getDynamicPassword18Flux(n.dynamicPassword18Flux);
-            if (dynamicPassword18FluxOverride !== null) {
+            if (dynamicPasswordOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Password (1.8-flux) changed (hidden for security)`);
                 // La password verrà gestita nella sezione credentials più avanti
             }
         } else if (n.influxdbVersion === VERSION_20) {
             // LucaT: Gestione override parametri specifici per Version 2.0
             // Override URL
-            const dynamicUrlOverride = getDynamicUrl2x(n.dynamicUrl2x);
             if (dynamicUrlOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override URL changed from [${n.url}] to [${dynamicUrlOverride}]`);
                 n.url = dynamicUrlOverride;
             }
             // Override Token (viene gestito nelle credentials)
-            const dynamicTokenOverride = getDynamicToken2x(n.dynamicToken2x);
             if (dynamicTokenOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
             // Override Timeout
-            const dynamicTimeout2xOverride = getDynamicTimeout2x(n.dynamicTimeout2x);
-            if (dynamicTimeout2xOverride !== null) {
-                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeout2xOverride}]`);
-                n.timeout = dynamicTimeout2xOverride;
+            if (dynamicTimeoutOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
+                n.timeout = dynamicTimeoutOverride;
             }
         }
         // LucaT: Gestione version override (FINE)
@@ -409,16 +309,14 @@ module.exports = function (RED) {
                 }
             }
 
-            // LucaT: DA TESTARE (INIZIO) Gestione override delle credenziali per VERSION_1X
+            // LucaT: (INIZIO) Gestione override delle credenziali per VERSION_1X
             let username = this.credentials.username;
             let password = this.credentials.password;
-            const dynamicUsername1xOverride = getDynamicUsername1x(n.dynamicUsername1x);
-            if (dynamicUsername1xOverride !== null) {
-                username = dynamicUsername1xOverride;
+            if (dynamicUsernameOverride !== null) {
+                username = dynamicUsernameOverride;
             }
-            const dynamicPassword1xOverride = getDynamicPassword1x(n.dynamicPassword1x);
-            if (dynamicPassword1xOverride !== null) {
-                password = dynamicPassword1xOverride;
+            if (dynamicPasswordOverride !== null) {
+                password = dynamicPasswordOverride;
             }
             this.client = new Influx.InfluxDB({
                 hosts: [{
@@ -431,7 +329,7 @@ module.exports = function (RED) {
                 username: username,
                 password: password
             });
-            // LucaT: DA TESTARE (FINE) Gestione override delle credenziali per VERSION_1X
+            // LucaT: (FINE) Gestione override delle credenziali per VERSION_1X
 
         } else if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             const timeout = Math.floor(+(n.timeout ? n.timeout : 10) * 1000) // convert from seconds to milliseconds
@@ -441,18 +339,17 @@ module.exports = function (RED) {
                 // VERSION_18_FLUX - controlla se ci sono override per username/password
                 let username = this.credentials.username;
                 let password = this.credentials.password;
-                const dynamicUsername18FluxOverride = getDynamicUsername18Flux(n.dynamicUsername18Flux);
-                if (dynamicUsername18FluxOverride !== null) {
-                    username = dynamicUsername18FluxOverride;
+                const dynamicUsernameOverride = getDynamicStringNotEmpty(n.dynamicUsername);
+                if (dynamicUsernameOverride !== null) {
+                    username = dynamicUsernameOverride;
                 }
-                const dynamicPassword18FluxOverride = getDynamicPassword18Flux(n.dynamicPassword18Flux);
-                if (dynamicPassword18FluxOverride !== null) {
-                    password = dynamicPassword18FluxOverride;
+                const dynamicPasswordOverride = getDynamicStringNotEmpty(n.dynamicPassword);
+                if (dynamicPasswordOverride !== null) {
+                    password = dynamicPasswordOverride;
                 }
                 token = `${username}:${password}`;
             } else {
                 // VERSION_20 - controlla se c'è un override del token
-                const dynamicTokenOverride = getDynamicToken2x(n.dynamicToken2x);
                 token = dynamicTokenOverride !== null ? dynamicTokenOverride : this.credentials.token;
             }
 
@@ -613,13 +510,14 @@ module.exports = function (RED) {
         this.retentionPolicyV18Flux = n.retentionPolicyV18Flux;
         this.org = n.org;
         this.bucket = n.bucket;
+        
         // LucaT: Dynamic Properties per nodo OUT
-        this.dynamicMeasurement = n.dynamicMeasurement;
-        this.dynamicDatabase = n.dynamicDatabase;
-        this.dynamicRetentionPolicyV18Flux = n.dynamicRetentionPolicyV18Flux;
-        this.dynamicOrg = n.dynamicOrg;
-        this.dynamicBucket = n.dynamicBucket;
-        this.dynamicPrecision = n.dynamicPrecision;
+        this.dynamicMeasurementOut = getDynamicStringNotEmpty(n.dynamicMeasurementOut);
+        this.dynamicDatabaseOut = getDynamicStringNotEmpty(n.dynamicDatabaseOut);
+        this.dynamicRetentionPolicyOut = getDynamicStringNotEmpty(n.dynamicRetentionPolicyOut);
+        this.dynamicOrgOut = getDynamicStringNotEmpty(n.dynamicOrgOut);
+        this.dynamicBucketOut = getDynamicStringNotEmpty(n.dynamicBucketOut);
+        this.dynamicPrecisionOut = getDynamicPrecision(n.dynamicPrecisionOut);
 
         // LucaT: Aggiungi contatore delle operazioni
         this.writeCount = 0;
