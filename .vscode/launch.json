@@ -20,7 +20,10 @@
                 "IDB_PORT": "8085",
                 "IDB_DATABASE": "testdb",
                 "IDB_USERNAME": "admin",
-                "IDB_PASSWORD": "password123"
+                "IDB_PASSWORD": "password123",
+                "IDB_MEASUREMENT_OUT": "mesaurementOut",
+                "IDB_PRECISION_OUT": "s",
+                "IDB_RETENTION_POLICY_OUT": "autogen",
             },
             "skipFiles": [
                 "<node_internals>/**"
@@ -46,7 +49,11 @@
                 "IDB_VERSION": "1.8",
                 "IDB_URL": "http://10.0.0.114:8086",
                 "IDB_USERNAME": "admin",
-                "IDB_PASSWORD": "password123"
+                "IDB_PASSWORD": "password123",
+                "IDB_MEASUREMENT_OUT": "mesaurementOut",
+                "IDB_PRECISION_OUT": "s",
+                "IDB_RETENTION_POLICY_OUT": "",
+                "IDB_DATABASE_OUT": "testdb",
             },
             "skipFiles": [
                 "<node_internals>/**"
@@ -74,6 +81,10 @@
                 "IDB_TOKEN": "my-super-secret-auth-token-123456789",
                 "IDB_TIMEOUT": "8",
                 "IDB_VERIFY_CERTIFICATE": "false",
+                "IDB_MEASUREMENT_OUT": "mesaurementOut",
+                "IDB_PRECISION_OUT": "s",
+                "IDB_ORGANIZATION_OUT": "my-org",
+                "IDB_BUCKET_OUT": "testdb"
             },
             "skipFiles": [
                 "<node_internals>/**"
@@ -99,37 +110,14 @@
                 "IDB_VERSION": "2",
                 "IDB_URL": "http://10.0.0.114:8087",
                 "IDB_TOKEN": "my-super-secret-auth-token-123456789",
+                "IDB_MEASUREMENT_OUT": "mesaurementOut",
+                "IDB_PRECISION_OUT": "s",
             },
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "restart": true,
             "runtimeArgs": ["--inspect=9232"],
-            "outputCapture": "std"
-        },
-        {
-            "name": "Debug Node-RED - Dynamic Override Test",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/node_modules/node-red/red.js",
-            "args": [
-                "--userDir", "${workspaceFolder}\\.node-red-dev",
-                "--verbose"
-            ],
-            "console": "integratedTerminal",
-            "env": {
-                "NODE_ENV": "development",
-                "DEBUG": "influx*",
-                "IDB_ENABLED": "true",
-                "IDB_VERSION": "2",
-                "IDB_URL": "http://10.0.0.114:8087",
-                "IDB_TOKEN": "my-super-secret-auth-token-123456789",
-            },
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "restart": true,
-            "runtimeArgs": ["--inspect=9233"],
             "outputCapture": "std"
         },
         {
