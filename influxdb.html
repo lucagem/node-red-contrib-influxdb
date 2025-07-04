@@ -1178,54 +1178,151 @@
 
 <!-- #region NODO IN -->
 <script type="text/html" data-template-name="influxdb in">
+    <!-- LucaT: Aggiunta struttura con tab per proprietà dinamiche -->
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-influxdb-in-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-influxdb"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.server"></span></label>
-        <input type="text" id="node-input-influxdb">
-    </div>
-    <div class="form-row" id="node-input-row-org">
-        <label for="node-input-org"><i class="fa fa-sitemap"></i> <span data-i18n="influxdb.label.org"></span></label>
-        <input type="text" id="node-input-org">
-    </div>
-    <div class="form-row" id="node-input-row-extras">
-        <input type="checkbox" id="node-input-rawOutput" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-rawOutput"><span data-i18n="influxdb.label.use-raw-output"></span></label>        
-        <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="advanced-options-checkbox" style="width: 60%;"><span data-i18n="influxdb.label.use-advanced-query"></span></label>
-        <div id="advanced-options-div" class="hide" style="margin-left: 20px; margin-top: 10px;">
+    <div id="node-influxdb-in-tabs-content" style="min-height: 170px;">
+
+        <!-- Tab Configuration -->
+        <div id="influxdb-in-tab-connection" style="display:none">
             <div class="form-row">
-                <label for="node-input-precision" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
-                <select type="text" id="node-input-precision" style="width:55%">
-                    <option value="">Default</option> 
-                    <option value="n">Nanoseconds (n)</option> 
-                    <option value="u">Microseconds (u)</option> 
-                    <option value="ms">Milliseconds (ms)</option> 
-                    <option value="s">Seconds (s)</option>
-                    <option value="m">Minute (m)</option>
-                    <option value="h">Hour (h)</option>
-                    <option value="d">Day (d)</option>
-                    <option value="w">Week (w)</option>
-                </select>  
+                <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
             </div>
             <div class="form-row">
-                <label for="node-input-retentionPolicy" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
-                <input type="text" style="width:55%" id="node-input-retentionPolicy">
+                <label for="node-input-influxdb"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.server"></span></label>
+                <input type="text" id="node-input-influxdb">
             </div>
-        </div>  
+            <div class="form-row" id="node-input-row-org">
+                <label for="node-input-org"><i class="fa fa-sitemap"></i> <span data-i18n="influxdb.label.org"></span></label>
+                <input type="text" id="node-input-org">
+            </div>
+            <div class="form-row" id="node-input-row-extras">
+                <input type="checkbox" id="node-input-rawOutput" style="display: inline-block; width: auto; vertical-align: top;">
+                <label for="node-input-rawOutput"><span data-i18n="influxdb.label.use-raw-output"></span></label>        
+                <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
+                <label for="advanced-options-checkbox" style="width: 60%;"><span data-i18n="influxdb.label.use-advanced-query"></span></label>
+                <div id="advanced-options-div" class="hide" style="margin-left: 20px; margin-top: 10px;">
+                    <div class="form-row">
+                        <label for="node-input-precision" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
+                        <select type="text" id="node-input-precision" style="width:55%">
+                            <option value="">Default</option> 
+                            <option value="n">Nanoseconds (n)</option> 
+                            <option value="u">Microseconds (u)</option> 
+                            <option value="ms">Milliseconds (ms)</option> 
+                            <option value="s">Seconds (s)</option>
+                            <option value="m">Minute (m)</option>
+                            <option value="h">Hour (h)</option>
+                            <option value="d">Day (d)</option>
+                            <option value="w">Week (w)</option>
+                        </select>  
+                    </div>
+                    <div class="form-row">
+                        <label for="node-input-retentionPolicy" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
+                        <input type="text" style="width:55%" id="node-input-retentionPolicy">
+                    </div>
+                </div>  
+            </div>
+            <div>
+                <input type="hidden" id="node-input-query">
+            </div>
+            <div class="form-row" style="margin-bottom: 0px;">
+                <label for="" style="width: unset;" id="node-input-query-label"><i class="fa fa-code"></i> <span data-i18n="influxdb.label.query"></label>
+            </div>
+            <div class="form-row node-text-editor-row">
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-query-editor" ></div>
+            </div>
+            <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]influxdb.tip.querytip"></span></div>
+        </div>
+
+        <!-- LucaT: Tab Dynamic Properties per nodo IN -->
+        <div id="influxdb-in-tab-dynamic" style="display:none">
+
+            <!-- Query dinamica -->
+            <div class="form-row">
+                <label for="node-input-dynamicQueryIn"><i class="fa fa-code"></i> Query</label>
+                <input type="text" id="node-input-dynamicQueryIn" placeholder="SELECT * FROM sensors | ${IDB_QUERY_IN}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Query:</strong> Override the query using environment variables like <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_QUERY_IN} (all DB versions)</code>.
+                When set, this will override the query specified in the Configuration tab.
+            </div>
+
+            <!-- Raw Output dinamico (solo per versione 1.x) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicRawOutputIn"><i class="fa fa-list-alt"></i> Raw Output (1.x)</label>
+                <input type="text" id="node-input-dynamicRawOutputIn" placeholder="true | false | ${IDB_RAW_OUTPUT_IN}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Raw Output:</strong> Override raw output setting for InfluxDB 1.x. Accepted values: <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">true</code> or
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">false</code>.
+                Use <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_RAW_OUTPUT_IN} (1.x)</code>
+                for environment variable.
+            </div>
+
+            <!-- Precision dinamica (solo per versione 1.x) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicPrecisionIn"><i class="fa fa-clock-o"></i> Time Precision (1.x)</label>
+                <input type="text" id="node-input-dynamicPrecisionIn" placeholder="ms | ns | s | ${IDB_PRECISION_IN}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Time Precision:</strong> Override time precision for InfluxDB 1.x. Accepted values: <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">n</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">u</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">ms</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">s</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">m</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">h</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">d</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">w</code>.
+                Use <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_PRECISION_IN} (1.x)</code>
+                for environment variable.
+            </div>
+
+            <!-- Retention Policy dinamico (solo per versione 1.x) -->
+            <div class="form-row">
+                <label for="node-input-dynamicRetentionPolicyIn"><i class="fa fa-gavel"></i> Retention Policy (1.x)</label>
+                <input type="text" id="node-input-dynamicRetentionPolicyIn"
+                    placeholder="autogen | ${IDB_RETENTION_POLICY_IN}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Retention Policy:</strong> Override retention policy for InfluxDB 1.x using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_RETENTION_POLICY_IN} (1.x)</code>.
+            </div>
+
+            <!-- Organization dinamica (per versione 2.0) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicOrgIn"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
+                <input type="text" id="node-input-dynamicOrgIn" placeholder="my-org | ${IDB_ORGANIZATION_IN}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Organization:</strong> Override organization for InfluxDB 2.0 using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ORGANIZATION_IN} (2.x)</code>.
+            </div>
+
+        </div>
     </div>
-    <div>
-        <input type="hidden" id="node-input-query">
-    </div>
-    <div class="form-row" style="margin-bottom: 0px;">
-        <label for="" style="width: unset;" id="node-input-query-label"><i class="fa fa-code"></i> <span data-i18n="influxdb.label.query"></label>
-    </div>
-    <div class="form-row node-text-editor-row">
-        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-query-editor" ></div>
-    </div>
-    <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]influxdb.tip.querytip"></span></div>
 </script>
 <script type="text/html" data-help-name="influxdb in">
     <p>Allows basic queries to be made to an influxdb time series database.</p>
@@ -1244,7 +1341,7 @@
     <p>Uses a flux query in the configuration property or using the property
     <b>msg.query</b>. The results will be returned in <b>msg.payload</b>.</p>
 </script>
-<!-- #region NODO IN -->
+<!-- #endregion NODO IN -->
 
 <!-- #region Javascript Nodo IN -->
 <script type="text/javascript">
@@ -1266,6 +1363,63 @@
                     }
                     return true;
                 }
+            },
+            // LucaT: Dynamic Properties per nodo IN
+            dynamicQueryIn: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For query, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicRawOutputIn: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid boolean-like value
+                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                }
+            },
+            dynamicPrecisionIn: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Check if it's a valid precision value
+                    const validPrecisions = ['n', 'u', 'ms', 's', 'm', 'h', 'd', 'w'];
+                    return validPrecisions.includes(value);
+                }
+            },
+            dynamicRetentionPolicyIn: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For retention policy, accept any non-empty string
+                    return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
+                }
+            },
+            dynamicOrgIn: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For organization, accept any non-empty string
+                    return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
+                }
             }
         },
         inputs: 1,
@@ -1279,6 +1433,34 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function () {
+            // ------------ LucaT: Inizializzazione tab START
+            var tabs = RED.tabs.create({
+                id: "node-influxdb-in-tabs",
+                onchange: function (tab) {
+                    $("#node-influxdb-in-tabs-content").children().hide();
+                    $("#" + tab.id).show();
+                }
+            });
+            tabs.addTab({
+                id: "influxdb-in-tab-connection",
+                label: "Configuration"
+            });
+            tabs.addTab({
+                id: "influxdb-in-tab-dynamic",
+                label: "Dynamic Properties"
+            });
+            setTimeout(function () {
+                tabs.resize()
+            }, 0);
+
+            // Popola i campi dinamici con i valori salvati
+            $("#node-input-dynamicQueryIn").val(this.dynamicQueryIn || "");
+            $("#node-input-dynamicRawOutputIn").val(this.dynamicRawOutputIn || "");
+            $("#node-input-dynamicPrecisionIn").val(this.dynamicPrecisionIn || "");
+            $("#node-input-dynamicRetentionPolicyIn").val(this.dynamicRetentionPolicyIn || "");
+            $("#node-input-dynamicOrgIn").val(this.dynamicOrgIn || "");
+            // ------------ LucaT: Inizializzazione tab END
+
             this.editor = RED.editor.createEditor({
                 id: 'node-input-query-editor',
                 mode: 'ace/mode/text',
@@ -1340,6 +1522,13 @@
             });
         },
         oneditsave: function () {
+            // LucaT: Salva le proprietà dinamiche del nodo IN
+            this.dynamicQueryIn = $("#node-input-dynamicQueryIn").val();
+            this.dynamicRawOutputIn = $("#node-input-dynamicRawOutputIn").val();
+            this.dynamicPrecisionIn = $("#node-input-dynamicPrecisionIn").val();
+            this.dynamicRetentionPolicyIn = $("#node-input-dynamicRetentionPolicyIn").val();
+            this.dynamicOrgIn = $("#node-input-dynamicOrgIn").val();
+
             $("#node-input-query").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
