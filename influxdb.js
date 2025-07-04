@@ -704,19 +704,13 @@ module.exports = function (RED) {
                     let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
                     bucket = `${node.database}/${retentionPolicy}`;
                     org = '';
-                    // LucaT: Log dettagliato per debug
-                    RED.log.info(`InfluxDB 1.8-flux OUT: node.database=[${node.database}], retentionPolicy=[${retentionPolicy}], bucket=[${bucket}], org=[${org}]`);
                 } else {
                     // Per 2.0, usa i valori (potenzialmente overridden)
                     bucket = node.bucket;
                     org = node.org;
-                    // LucaT: Log dettagliato per debug
-                    RED.log.info(`InfluxDB 2.0 OUT: bucket=[${bucket}], org=[${org}]`);
                 }
-
                 // LucaT: Crea il writeApi ad ogni input con i parametri aggiornati
                 node.client = node.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
-
                 writePoints(msg, node, done);
             });
         }        // LucaT: Ascolta le modifiche alla configurazione

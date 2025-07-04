@@ -24,6 +24,8 @@
                 "IDB_MEASUREMENT_OUT": "mesaurementOut",
                 "IDB_PRECISION_OUT": "s",
                 "IDB_RETENTION_POLICY_OUT": "autogen",
+                "IDB_PRECISION_BATCH": "s",
+                "IDB_RETENTION_POLICY_BATCH": "autogen",
             },
             "skipFiles": [
                 "<node_internals>/**"
@@ -54,6 +56,9 @@
                 "IDB_PRECISION_OUT": "s",
                 "IDB_RETENTION_POLICY_OUT": "",
                 "IDB_DATABASE_OUT": "testdb",
+                "IDB_PRECISION_BATCH": "s",
+                "IDB_RETENTION_POLICY_BATCH": "",
+                "IDB_DATABASE_BATCH": "testdb",
             },
             "skipFiles": [
                 "<node_internals>/**"
@@ -84,7 +89,10 @@
                 "IDB_MEASUREMENT_OUT": "mesaurementOut",
                 "IDB_PRECISION_OUT": "s",
                 "IDB_ORGANIZATION_OUT": "my-org",
-                "IDB_BUCKET_OUT": "testdb"
+                "IDB_BUCKET_OUT": "testdb",
+                "IDB_PRECISION_BATCH": "s",
+                "IDB_ORGANIZATION_BATCH": "my-org",
+                "IDB_BUCKET_BATCH": "testdb",
             },
             "skipFiles": [
                 "<node_internals>/**"

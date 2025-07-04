@@ -867,75 +867,147 @@
 
 <!-- #region NODO BATCH -->
 <script type="text/html" data-template-name="influxdb batch">
+    <!-- LucaT: Aggiunta struttura con tab per proprietà dinamiche -->
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-influxdb-batch-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-influxdb"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.server"></span></label>
-        <input type="text" id="node-input-influxdb">
-    </div>
-    <div class="form-row" id="node-input-row-org">
-        <label for="node-input-org"><i class="fa fa-sitemap"></i> <span data-i18n="influxdb.label.org"></span></label>
-        <input type="text" id="node-input-org">
-    </div>
-    <div class="form-row" id="node-input-row-bucket">
-        <label for="node-input-bucket"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.bucket"></span></label>
-        <input type="text" id="node-input-bucket">
-    </div>
-    <div class="form-row" id="node-input-row-database">
-        <label for="node-input-database"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.database"></span></label>
-        <input type="text" id="node-input-database">
-    </div>
-    <div class="form-row" id="node-input-row-enableAdvancedOptions">
-        <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="advanced-options-checkbox" style="width: 70%;"><span data-i18n="influxdb.label.use-advanced-query"></span></label>
-        <div id="advanced-options-div" class="hide" style="margin-left: 20px; margin-top: 10px;">
+    <div id="node-influxdb-batch-tabs-content" style="min-height: 170px;">
+
+        <!-- Tab Configuration -->
+        <div id="influxdb-batch-tab-connection" style="display:none">
             <div class="form-row">
-                <label for="node-input-precision" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
-                <select type="text" id="node-input-precision" style="width:55%">
-                    <option value="">Default</option> 
-                    <option value="n">Nanoseconds (n)</option> 
-                    <option value="u">Microseconds (u)</option> 
+                <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-influxdb"><i class="fa fa-server"></i> <span data-i18n="influxdb.label.server"></span></label>
+                <input type="text" id="node-input-influxdb">
+            </div>
+            <div class="form-row" id="node-input-row-org">
+                <label for="node-input-org"><i class="fa fa-sitemap"></i> <span data-i18n="influxdb.label.org"></span></label>
+                <input type="text" id="node-input-org">
+            </div>
+            <div class="form-row" id="node-input-row-bucket">
+                <label for="node-input-bucket"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.bucket"></span></label>
+                <input type="text" id="node-input-bucket">
+            </div>
+            <div class="form-row" id="node-input-row-database">
+                <label for="node-input-database"><i class="fa fa-database"></i> <span data-i18n="influxdb.label.database"></span></label>
+                <input type="text" id="node-input-database">
+            </div>
+            <div class="form-row" id="node-input-row-enableAdvancedOptions">
+                <input type="checkbox" id="advanced-options-checkbox" style="display: inline-block; width: auto; vertical-align: top;">
+                <label for="advanced-options-checkbox" style="width: 70%;"><span data-i18n="influxdb.label.use-advanced-query"></span></label>
+                <div id="advanced-options-div" class="hide" style="margin-left: 20px; margin-top: 10px;">
+                    <div class="form-row">
+                        <label for="node-input-precision" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
+                        <select type="text" id="node-input-precision" style="width:55%">
+                            <option value="">Default</option> 
+                            <option value="n">Nanoseconds (n)</option> 
+                            <option value="u">Microseconds (u)</option> 
+                            <option value="ms">Milliseconds (ms)</option> 
+                            <option value="s">Seconds (s)</option>
+                            <option value="m">Minute (m)</option>
+                            <option value="h">Hour (h)</option>
+                            <option value="d">Day (d)</option>
+                            <option value="w">Week (w)</option>
+                        </select>  
+                    </div>
+                    <div class="form-row">
+                        <label for="node-input-retentionPolicy" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
+                        <input type="text" style="width:55%" id="node-input-retentionPolicy">
+                    </div>
+                </div>  
+            </div>
+            <div class="form-row" id="node-input-row-precisionV18FluxV20">
+                <label for="node-input-precisionV18FluxV20" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
+                <select type="text" id="node-input-precisionV18FluxV20" style="width:55%">
+                    <option value="ns">Nanoseconds (ns)</option> 
+                    <option value="us">Microseconds (us)</option> 
                     <option value="ms">Milliseconds (ms)</option> 
                     <option value="s">Seconds (s)</option>
-                    <option value="m">Minute (m)</option>
-                    <option value="h">Hour (h)</option>
-                    <option value="d">Day (d)</option>
-                    <option value="w">Week (w)</option>
                 </select>  
             </div>
-            <div class="form-row">
-                <label for="node-input-retentionPolicy" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
-                <input type="text" style="width:55%" id="node-input-retentionPolicy">
+            <div class="form-row" id="node-input-row-retentionPolicyV18Flux">
+                <label for="node-input-retentionPolicyV18Flux" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
+                <input type="text" id="node-input-retentionPolicyV18Flux" style="width:55%">
             </div>
-        </div>  
+            <div class="form-tips" id="node-warning-retention-policy"><span data-i18n="[html]influxdb.tip.retention-policy"></span></div>
+        </div>
+
+        <!-- LucaT: Tab Dynamic Properties per nodo BATCH -->
+        <div id="influxdb-batch-tab-dynamic" style="display:none">
+
+            <!-- Precision dinamica -->
+            <div class="form-row">
+                <label for="node-input-dynamicPrecisionBatch"><i class="fa fa-clock-o"></i> Time Precision</label>
+                <input type="text" id="node-input-dynamicPrecisionBatch" placeholder="ms | ns | s | ${IDB_PRECISION_BATCH}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Time Precision:</strong> Override time precision. Accepted values: <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">ns</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">us</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">ms</code>,
+                <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">s</code>.
+                Use <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_PRECISION_BATCH} (all DB versions)</code>
+                for environment variable.
+            </div>
+
+            <!-- Retention Policy dinamico (per versioni 1.x e 1.8-flux) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicRetentionPolicyBatch"><i class="fa fa-gavel"></i> Retention Policy (1.x/F)</label>
+                <input type="text" id="node-input-dynamicRetentionPolicyBatch"
+                    placeholder="autogen | ${IDB_RETENTION_POLICY_BATCH}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Retention Policy:</strong> Override retention policy for InfluxDB 1.x and 1.8-flux using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_RETENTION_POLICY_BATCH} (1.x / 1.8-Flux)</code>.
+            </div>
+
+            <!-- Database dinamico (per versione 1.8-flux) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicDatabaseBatch"><i class="fa fa-database"></i> Database (1.8-flux)</label>
+                <input type="text" id="node-input-dynamicDatabaseBatch" placeholder="mydb | ${IDB_DATABASE_BATCH}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Database:</strong> Override database name for InfluxDB 1.8-flux using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_DATABASE_BATCH} (1.8-Flux)</code>.
+            </div>
+
+            <!-- Organization dinamica (per versione 2.0) -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="form-row">
+                <label for="node-input-dynamicOrgBatch"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
+                <input type="text" id="node-input-dynamicOrgBatch" placeholder="my-org | ${IDB_ORGANIZATION_BATCH}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Organization:</strong> Override organization for InfluxDB 2.0 using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ORGANIZATION_BATCH} (2.x)</code>.
+            </div>
+
+            <!-- Bucket dinamico (per versione 2.0) -->
+            <div class="form-row">
+                <label for="node-input-dynamicBucketBatch"><i class="fa fa-database"></i> Bucket (2.0)</label>
+                <input type="text" id="node-input-dynamicBucketBatch" placeholder="my-bucket | ${IDB_BUCKET_BATCH}">
+            </div>
+            <div class="form-tips"
+                style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+                <strong>Dynamic Bucket:</strong> Override bucket for InfluxDB 2.0 using <code
+                    style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_BUCKET_BATCH} (2.x)</code>.
+            </div>
+
+        </div>
     </div>
-    <div class="form-row" id="node-input-row-precisionV18FluxV20">
-        <label for="node-input-precisionV18FluxV20" style="width:35%"><i class="fa fa-clock-o"></i> <span data-i18n="influxdb.label.time-precision"></span></label>
-        <select type="text" id="node-input-precisionV18FluxV20" style="width:55%">
-            <option value="ns">Nanoseconds (ns)</option> 
-            <option value="us">Microseconds (us)</option> 
-            <option value="ms">Milliseconds (ms)</option> 
-            <option value="s">Seconds (s)</option>
-        </select>  
-    </div>
-    <div class="form-row" id="node-input-row-retentionPolicyV18Flux">
-        <label for="node-input-retentionPolicyV18Flux" style="width:35%"><i class="fa fa-gavel"></i> <span data-i18n="influxdb.label.retention-policy"></span></label>
-        <input type="text" id="node-input-retentionPolicyV18Flux" style="width:55%">
-    </div>
-    <div class="form-tips" id="node-warning-retention-policy"><span data-i18n="[html]influxdb.tip.retention-policy"></span></div>
-</script>
-<script type="text/html" data-help-name="influxdb batch">
-    <p><b>InfluxDB 1.8</b></p>
-    <p>A influxdb output node to write multiple points (fields and tags) to multiple influxdb measurements.</p>
-    <p>The <b>msg.payload</b> needs to be an array of <i>point</i> objects.</p>
-    <p>The <b>measurement</b> property of a point contains the name of the measurement for the point. The <b>fields</b> property will contain the
-    fields of the point.  If supplied, the <b>tags</b> property will contain the tags for the point. To set the time
-    for the point, supply a <b>timestamp</b> property.</p>
-    <p>Check <i>Advanced Query Options</i> to specify a time precision and retention policy for the insertion.<p>
-    <p>The advanced query options <i>Time Precision</i> and <i>Retention Policy</i> can be overwritten using 
-    message properties <b>msg.precision</b> and <b>msg.retentionPolicy</b>.</p>
 </script>
 <!-- #endregion NODO BATCH -->
 
@@ -950,6 +1022,12 @@
             precision: { value: "" },
             retentionPolicy: { value: "" },
             name: { value: "" },
+            // LucaT: Dynamic Properties per nodo BATCH
+            dynamicPrecisionBatch: { value: "" },
+            dynamicRetentionPolicyBatch: { value: "" },
+            dynamicDatabaseBatch: { value: "" },
+            dynamicOrgBatch: { value: "" },
+            dynamicBucketBatch: { value: "" },
             database: {
                 value: "database",
                 validate: function (db) {
@@ -993,6 +1071,34 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function () {
+            // ------------ LucaT: Inizializzazione tab START
+            var tabs = RED.tabs.create({
+                id: "node-influxdb-batch-tabs",
+                onchange: function (tab) {
+                    $("#node-influxdb-batch-tabs-content").children().hide();
+                    $("#" + tab.id).show();
+                }
+            });
+            tabs.addTab({
+                id: "influxdb-batch-tab-connection",
+                label: "Configuration"
+            });
+            tabs.addTab({
+                id: "influxdb-batch-tab-dynamic",
+                label: "Dynamic Properties"
+            });
+            setTimeout(function () {
+                tabs.resize()
+            }, 0);
+
+            // Popola i campi dinamici con i valori salvati
+            $("#node-input-dynamicPrecisionBatch").val(this.dynamicPrecisionBatch || "");
+            $("#node-input-dynamicRetentionPolicyBatch").val(this.dynamicRetentionPolicyBatch || "");
+            $("#node-input-dynamicDatabaseBatch").val(this.dynamicDatabaseBatch || "");
+            $("#node-input-dynamicOrgBatch").val(this.dynamicOrgBatch || "");
+            $("#node-input-dynamicBucketBatch").val(this.dynamicBucketBatch || "");
+            // ------------ LucaT: Inizializzazione tab END
+
             function update18Options() {
                 $("#node-input-row-org").hide();
                 $("#node-input-row-bucket").hide();
@@ -1053,6 +1159,13 @@
             }
         },
         oneditsave: function () {
+            // LucaT: Salva le proprietà dinamiche del nodo BATCH
+            this.dynamicPrecisionBatch = $("#node-input-dynamicPrecisionBatch").val();
+            this.dynamicRetentionPolicyBatch = $("#node-input-dynamicRetentionPolicyBatch").val();
+            this.dynamicDatabaseBatch = $("#node-input-dynamicDatabaseBatch").val();
+            this.dynamicOrgBatch = $("#node-input-dynamicOrgBatch").val();
+            this.dynamicBucketBatch = $("#node-input-dynamicBucketBatch").val();
+
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
