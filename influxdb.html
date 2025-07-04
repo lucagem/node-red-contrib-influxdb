@@ -614,67 +614,19 @@
         <!-- Measurement dinamico -->
         <div class="form-row">
             <label for="node-input-dynamicMeasurement"><i class="fa fa-rss"></i> Measurement</label>
-            <input type="text" id="node-input-dynamicMeasurement" placeholder="sensors | ${IDB_MEASUREMENT}">
+            <input type="text" id="node-input-dynamicMeasurement" placeholder="sensors | ${IDB_MEASUREMENT_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
             <strong>Dynamic Measurement:</strong> Override the measurement name using environment variables like <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_MEASUREMENT}</code>.
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_MEASUREMENT_OUT}  (all DB versions)</code>.
         </div>
-
-        <!-- Database dinamico (per versione 1.8-flux) -->
-        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
-        <div class="form-row">
-            <label for="node-input-dynamicDatabase"><i class="fa fa-database"></i> Database (1.8-flux)</label>
-            <input type="text" id="node-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE}">
-        </div>
-        <div class="form-tips"
-            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-            <strong>Dynamic Database:</strong> Override database name for InfluxDB 1.8-flux using <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_DATABASE}</code>.
-        </div>
-
-        <!-- Retention Policy dinamico (per versione 1.8-flux) -->
-        <div class="form-row">
-            <label for="node-input-dynamicRetentionPolicyV18Flux"><i class="fa fa-gavel"></i> Retention Policy
-                (1.8-flux)</label>
-            <input type="text" id="node-input-dynamicRetentionPolicyV18Flux"
-                placeholder="autogen | ${IDB_RETENTION_POLICY}">
-        </div>
-        <div class="form-tips"
-            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-            <strong>Dynamic Retention Policy:</strong> Override retention policy for InfluxDB 1.8-flux using <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_RETENTION_POLICY}</code>.
-        </div>
-
-        <!-- Organization dinamica (per versione 2.0) -->
-        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
-        <div class="form-row">
-            <label for="node-input-dynamicOrg"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
-            <input type="text" id="node-input-dynamicOrg" placeholder="my-org | ${IDB_ORGANIZATION}">
-        </div>
-        <div class="form-tips"
-            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-            <strong>Dynamic Organization:</strong> Override organization for InfluxDB 2.0 using <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ORGANIZATION}</code>.
-        </div>
-
-        <!-- Bucket dinamico (per versione 2.0) -->
-        <div class="form-row">
-            <label for="node-input-dynamicBucket"><i class="fa fa-database"></i> Bucket (2.0)</label>
-            <input type="text" id="node-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET}">
-        </div>
-        <div class="form-tips"
-            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-            <strong>Dynamic Bucket:</strong> Override bucket for InfluxDB 2.0 using <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_BUCKET}</code>.
-        </div>
-
+        
         <!-- Precision dinamica -->
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
         <div class="form-row">
             <label for="node-input-dynamicPrecision"><i class="fa fa-clock-o"></i> Time Precision</label>
-            <input type="text" id="node-input-dynamicPrecision" placeholder="ms | ns | s | ${IDB_PRECISION}">
+            <input type="text" id="node-input-dynamicPrecision" placeholder="ms | ns | s | ${IDB_PRECISION_OUT}">
         </div>
         <div class="form-tips"
             style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
@@ -687,8 +639,56 @@
             <code
                 style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">s</code>.
             Use <code
-                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_PRECISION}</code>
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_PRECISION_OUT}  (all DB versions)</code>
             for environment variable.
+        </div>
+
+        <!-- Database dinamico (per versione 1.8-flux) -->
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+        <div class="form-row">
+            <label for="node-input-dynamicDatabase"><i class="fa fa-database"></i> Database (1.8-flux)</label>
+            <input type="text" id="node-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE_OUT}">
+        </div>
+        <div class="form-tips"
+            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+            <strong>Dynamic Database:</strong> Override database name for InfluxDB 1.8-flux using <code
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_DATABASE_OUT} (1.8-Flux)</code>.
+        </div>
+
+        <!-- Retention Policy dinamico (per versione 1.8-flux) -->
+        <div class="form-row">
+            <label for="node-input-dynamicRetentionPolicyV18Flux"><i class="fa fa-gavel"></i> Retention Policy
+                (1.x/F)</label>
+            <input type="text" id="node-input-dynamicRetentionPolicyV18Flux"
+                placeholder="autogen | ${IDB_RETENTION_POLICY_OUT}">
+        </div>
+        <div class="form-tips"
+            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+            <strong>Dynamic Retention Policy:</strong> Override retention policy for InfluxDB 1.8-flux using <code
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_RETENTION_POLICY_OUT}  (1.x / 1.8-Flux)</code>.
+        </div>
+
+        <!-- Organization dinamica (per versione 2.0) -->
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+        <div class="form-row">
+            <label for="node-input-dynamicOrg"><i class="fa fa-sitemap"></i> Organization (2.0)</label>
+            <input type="text" id="node-input-dynamicOrg" placeholder="my-org | ${IDB_ORGANIZATION_OUT}">
+        </div>
+        <div class="form-tips"
+            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+            <strong>Dynamic Organization:</strong> Override organization for InfluxDB 2.0 using <code
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ORGANIZATION_OUT} (2.x)</code>.
+        </div>
+
+        <!-- Bucket dinamico (per versione 2.0) -->
+        <div class="form-row">
+            <label for="node-input-dynamicBucket"><i class="fa fa-database"></i> Bucket (2.0)</label>
+            <input type="text" id="node-input-dynamicBucket" placeholder="my-bucket | ${IDB_BUCKET_OUT}">
+        </div>
+        <div class="form-tips"
+            style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
+            <strong>Dynamic Bucket:</strong> Override bucket for InfluxDB 2.0 using <code
+                style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_BUCKET_OUT} (2.x)</code>.
         </div>
 
     </div>
@@ -886,29 +886,18 @@
             });
         },
         oneditsave: function () {
+            // LucaT: Salva le proprietà dinamiche del nodo OUT
+            this.dynamicMeasurement = $("#node-input-dynamicMeasurement").val();
+            this.dynamicDatabase = $("#node-input-dynamicDatabase").val();
+            this.dynamicRetentionPolicyV18Flux = $("#node-input-dynamicRetentionPolicyV18Flux").val();
+            this.dynamicOrg = $("#node-input-dynamicOrg").val();
+            this.dynamicBucket = $("#node-input-dynamicBucket").val();
+            this.dynamicPrecision = $("#node-input-dynamicPrecision").val();
+
             // reset inputs if we are not using advanced options
             if (!$("#advanced-options-checkbox").is(':checked')) {
                 $("#node-input-precision").val("");
                 $("#node-input-retentionPolicy").val("");
-                // ------------ LucaT: Save Dynamic Properties values (START)
-                this.dynamicEnabled = $("#node-config-input-dynamicEnabled").val();
-                this.dynamicVersion = $("#node-config-input-dynamicVersion").val();
-                // Sezione 1.x
-                this.dynamicHostname1x = $("#node-config-input-dynamicHostname1x").val();
-                this.dynamicPort1x = $("#node-config-input-dynamicPort1x").val();
-                this.dynamicDatabase1x = $("#node-config-input-dynamicDatabase1x").val();
-                this.dynamicUsername1x = $("#node-config-input-dynamicUsername1x").val();
-                this.dynamicPassword1x = $("#node-config-input-dynamicPassword1x").val();
-                // Sezione 1.8
-                this.dynamicUrl18Flux = $("#node-config-input-dynamicUrl18Flux").val();
-                this.dynamicUsername18Flux = $("#node-config-input-dynamicUsername18Flux").val();
-                this.dynamicPassword18Flux = $("#node-config-input-dynamicPassword18Flux").val();
-                // Sezione 2.x
-                this.dynamicUrl2x = $("#node-config-input-dynamicUrl2x").val();
-                this.dynamicToken2x = $("#node-config-input-dynamicToken2x").val();
-                this.dynamicTimeout2x = $("#node-config-input-dynamicTimeout2x").val();
-                this.dynamicVerifyCertificate2x = $("#node-config-input-dynamicVerifyCertificate2x").val();
-                // ------------ LucaT: Save Dynamic Properties values (END)
             }
         }
     });
@@ -989,7 +978,7 @@
 </script>
 <!-- #endregion NODO BATCH -->
 
-<!-- #region Javacript Nodo BATCH -->
+<!-- #region Javascript Nodo BATCH -->
 <script type="text/javascript">
     RED.nodes.registerType('influxdb batch', {
         category: 'storage-output',
@@ -1111,7 +1100,7 @@
         }
     });
 </script>
-<!-- #endregion Javacript Nodo BATCH -->
+<!-- #endregion Javascript Nodo BATCH -->
 
 <!-- #region NODO IN -->
 <script type="text/html" data-template-name="influxdb in">
@@ -1183,7 +1172,7 @@
 </script>
 <!-- #region NODO IN -->
 
-<!-- #region Javacript Nodo IN -->
+<!-- #region Javascript Nodo IN -->
 <script type="text/javascript">
     RED.nodes.registerType('influxdb in', {
         category: 'storage-input',
@@ -1293,4 +1282,4 @@
         }
     });
 </script>
-<!-- #endregion Javacript Nodo IN -->
+<!-- #endregion Javascript Nodo IN -->
