@@ -69,7 +69,7 @@
             <!-- Connection Control -->
             <div class="form-row">
                 <label for="node-config-input-dynamicEnabled"><i class="fa fa-power-off"></i> Connection Enabled</label>
-                <input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${VARIABLE_NAME}">
+                <input type="text" id="node-config-input-dynamicEnabled" placeholder="true | false | 0 | 1 | ${IDB_ENABLED}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
                 <strong>Connection Control:</strong> Leave empty for normal connection behavior. 
@@ -77,8 +77,9 @@
                 <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">'0'</code> to disable the connection completely. 
                 When disabled, all InfluxDb operations will be silently ignored without generating errors. 
                 Supports environment variables like <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_ENABLED}</code>.
-            </div>            
-            <!-- General Version Control -->
+            </div>
+            
+            <!-- Version Control -->
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
                 <label for="node-config-input-dynamicVersion"><i class="fa fa-code-fork"></i> InfluxDb Version</label>
@@ -90,103 +91,105 @@
                 <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">2</code>. 
                 When set, this will override the version selected in the Configuration tab. 
                 Use environment variables like <code style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_VERSION}</code> for dynamic configuration.
-            </div>        
-            <!-- InfluxDb 1.x Section -->
-            <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 1.x Configuration</h4>            
+            </div>
+            
+            <!-- Hostname -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
-                <label for="node-config-input-dynamicHostname1x"><i class="fa fa-server"></i> Hostname (1.x)</label>
-                <input type="text" id="node-config-input-dynamicHostname1x" placeholder="10.0.1.253 | ${IDB_HOSTNAME_1X}">
+                <label for="node-config-input-dynamicHostname"><i class="fa fa-server"></i> Hostname</label>
+                <input type="text" id="node-config-input-dynamicHostname" placeholder="127.0.0.1 | ${IDB_HOSTNAME}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Hostname</strong> for InfluxDb 1.x version. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_HOSTNAME_1X}</code> for environment variable.
-            </div>            
+                <strong>Hostname:</strong> Used only in <strong>InfluxDB 1.x</strong>. Override the server hostname. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_HOSTNAME}</code> for environment variable.
+            </div>
+            
+            <!-- Port -->
             <div class="form-row">
-                <label for="node-config-input-dynamicPort1x"><i class="fa fa-plug"></i> Port (1.x)</label>
-                <input type="text" id="node-config-input-dynamicPort1x" placeholder="8086 | ${IDB_PORT_1X}">
+                <label for="node-config-input-dynamicPort"><i class="fa fa-plug"></i> Port</label>
+                <input type="text" id="node-config-input-dynamicPort" placeholder="8086 | ${IDB_PORT}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Port</strong> for InfluxDb 1.x version. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">8086</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PORT_1X}</code> for environment variable.
-            </div>            
+                <strong>Port:</strong> Used only in <strong>InfluxDB 1.x</strong>. Override the server port. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">8086</code>. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PORT}</code> for environment variable.
+            </div>
+            
+            <!-- URL -->
             <div class="form-row">
-                <label for="node-config-input-dynamicDatabase1x"><i class="fa fa-database"></i> Database (1.x)</label>
-                <input type="text" id="node-config-input-dynamicDatabase1x" placeholder="db0 | ${IDB_DATABASE_1X}">
+                <label for="node-config-input-dynamicUrl"><i class="fa fa-globe"></i> URL</label>
+                <input type="text" id="node-config-input-dynamicUrl" placeholder="http://localhost:8086 | ${IDB_URL}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Database name</strong> for InfluxDb 1.x. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_DATABASE_1X}</code> for environment variable.
-            </div>            
+                <strong>URL:</strong> Used in <strong>InfluxDB 1.8-Flux and 2.0</strong>. Complete server URL including protocol and port. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_URL}</code> for environment variable.
+            </div>
+            
+            <!-- Database -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
-                <label for="node-config-input-dynamicUsername1x"><i class="fa fa-user"></i> Username (1.x)</label>
-                <input type="text" id="node-config-input-dynamicUsername1x" placeholder="admin | ${IDB_USERNAME_1X}">
+                <label for="node-config-input-dynamicDatabase"><i class="fa fa-database"></i> Database</label>
+                <input type="text" id="node-config-input-dynamicDatabase" placeholder="mydb | ${IDB_DATABASE}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Username</strong> for InfluxDb 1.x authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME_1X}</code> for environment variable.
-            </div>            
+                <strong>Database:</strong> Used in <strong>InfluxDB 1.x</strong> as database name, and in <strong>InfluxDB 1.8-Flux</strong> as part of bucket name (database/retention). 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_DATABASE}</code> for environment variable.
+            </div>
+            
+            <!-- Username -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
-                <label for="node-config-input-dynamicPassword1x"><i class="fa fa-lock"></i> Password (1.x)</label>
-                <input type="text" id="node-config-input-dynamicPassword1x" placeholder="${IDB_PASSWORD_1X}">
+                <label for="node-config-input-dynamicUsername"><i class="fa fa-user"></i> Username</label>
+                <input type="text" id="node-config-input-dynamicUsername" placeholder="admin | ${IDB_USERNAME}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Password</strong> for InfluxDb 1.x authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD_1X}</code> for environment variable.
-            </div>                       
-            <!-- InfluxDb 1.8 Section -->
-            <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 1.8 Configuration</h4>            
+                <strong>Username:</strong> Used for authentication in <strong>InfluxDB 1.x and 1.8-Flux</strong>. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME}</code> for environment variable.
+            </div>
+            
+            <!-- Password -->
             <div class="form-row">
-                <label for="node-config-input-dynamicUrl18Flux"><i class="fa fa-server"></i> URL (1.8)</label>
-                <input type="text" id="node-config-input-dynamicUrl18Flux" placeholder="localhost | ${IDB_URL_18_FLUX}">
+                <label for="node-config-input-dynamicPassword"><i class="fa fa-lock"></i> Password</label>
+                <input type="text" id="node-config-input-dynamicPassword" placeholder="${IDB_PASSWORD}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Full URL</strong> for InfluxDb 1.8 version. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_URL_18_FLUX}</code> for environment variable.
-            </div>            
+                <strong>Password:</strong> Used for authentication in <strong>InfluxDB 1.x and 1.8-Flux</strong>. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD}</code> for environment variable.
+            </div>
+            
+            <!-- Token -->
             <div class="form-row">
-                <label for="node-config-input-dynamicUsername18Flux"><i class="fa fa-user"></i> Username (1.8)</label>
-                <input type="text" id="node-config-input-dynamicUsername18Flux" placeholder="admin | ${IDB_USERNAME_18_FLUX}">
+                <label for="node-config-input-dynamicToken"><i class="fa fa-key"></i> Token</label>
+                <input type="text" id="node-config-input-dynamicToken" placeholder="${IDB_TOKEN}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Username</strong> for InfluxDb 1.8 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_USERNAME_18_FLUX}</code> for environment variable.
-            </div>            
+                <strong>Token:</strong> Used for authentication in <strong>InfluxDB 2.0</strong>. Required instead of username/password for version 2.0. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TOKEN}</code> for environment variable.
+            </div>
+            
+            <!-- Timeout -->
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
             <div class="form-row">
-                <label for="node-config-input-dynamicPassword18Flux"><i class="fa fa-lock"></i> Password (1.8)</label>
-                <input type="text" id="node-config-input-dynamicPassword18Flux" placeholder="${IDB_PASSWORD_18_FLUX}">
+                <label for="node-config-input-dynamicTimeout"><i class="fa fa-clock-o"></i> Timeout (seconds)</label>
+                <input type="text" id="node-config-input-dynamicTimeout" placeholder="10 | ${IDB_TIMEOUT}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Password</strong> for InfluxDb 1.8 authentication. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_PASSWORD_18_FLUX}</code> for environment variable.
-            </div>            
-            <!-- InfluxDb 2.0 Section -->
-            <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
-            <h4 style="margin: 10px 0; color: #666; font-weight: bold; font-size: 16px;">InfluxDb 2.0 Configuration</h4>            
+                <strong>Timeout:</strong> Used in <strong>InfluxDB 1.8-Flux and 2.0</strong>. Connection timeout in seconds. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">10</code>. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TIMEOUT}</code> for environment variable.
+            </div>
+            
+            <!-- Verify Certificate -->
             <div class="form-row">
-                <label for="node-config-input-dynamicUrl2x"><i class="fa fa-server"></i> URL (2.0)</label>
-                <input type="text" id="node-config-input-dynamicUrl2x" placeholder="http://localhost:8086 | ${IDB_URL_2X}">
+                <label for="node-config-input-dynamicVerifyCertificate"><i class="fa fa-shield"></i> Verify Server Certificate</label>
+                <input type="text" id="node-config-input-dynamicVerifyCertificate" placeholder="true | false | ${IDB_VERIFY_CERTIFICATE}">
             </div>
             <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Full URL</strong> for InfluxDb 2.0 server. Include protocol and port. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_URL_2X}</code> for environment variable.
-            </div>            
-            <div class="form-row">
-                <label for="node-config-input-dynamicToken2x"><i class="fa fa-key"></i> Token (2.0)</label>
-                <input type="text" id="node-config-input-dynamicToken2x" placeholder="${IDB_TOKEN}">
+                <strong>Verify Certificate:</strong> Used in <strong>InfluxDB 1.8-Flux and 2.0</strong>. Set to <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">true</code> or <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">false</code> to control SSL certificate verification. 
+                Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_VERIFY_CERTIFICATE}</code> for environment variable.
             </div>
-            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Authentication token</strong> for InfluxDb 2.0. Required for authentication instead of username/password. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TOKEN}</code> for environment variable.
-            </div>                 
-            <div class="form-row">
-                <label for="node-config-input-dynamicTimeout2x"><i class="fa fa-clock-o"></i> Timeout (seconds)</label>
-                <input type="text" id="node-config-input-dynamicTimeout2x" placeholder="10 | ${IDB_TIMEOUT_2X}">
-            </div>
-            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Connection timeout</strong> in seconds. Default is <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">10</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_TIMEOUT_2X}</code> for environment variable.
-            </div>            
-            <div class="form-row">
-                <label for="node-config-input-dynamicVerifyCertificate2x"><i class="fa fa-shield"></i> Verify server certificate</label>
-                <input type="text" id="node-config-input-dynamicVerifyCertificate2x" placeholder="true | false | ${IDB_VERIFY_CERTIFICATE_2X}">
-            </div>
-            <div class="form-tips" style="margin-bottom: 15px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; line-height: 1.4; min-height: auto; max-width: none; width: auto;">
-                <strong>Verify server certificate</strong> when connecting via HTTPS. Set to <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">true</code> or <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">false</code>. Use <code style="background-color: #f8f9fa; padding: 1px 3px; border-radius: 2px; font-family: monospace;">${IDB_VERIFY_CERTIFICATE_2X}</code> for environment variable.
-			</div>            
         </div>         
         <!-- LucaT: New section in page "Dynamic Properties" (END) -->
-	</div>
+
+    </div>
     <!-- LucaT (END) -->
 </script>
 
@@ -198,6 +201,7 @@
     RED.nodes.registerType('influxdb', {
         category: 'config',
         color: "rgb(218, 196, 180)",
+        // ------------ LucaT: default values config node (START)
         defaults: {
             hostname: { value: "127.0.0.1", required: true },
             port: { value: 8086, required: true },
@@ -251,73 +255,18 @@
                     return ["1", "1.8", "2"].includes(value);
                 }
             },
-            dynamicUsername18Flux: {
+            dynamicHostname: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
                     if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // For username, accept any non-empty string
+                    // For hostname, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
             },
-            dynamicPassword18Flux: {
-                value: "",
-                validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // For password, accept any string (can be empty)
-                    return true;
-                }
-            },
-            dynamicUrl18Flux: {
-                value: "",
-                validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // Basic URL validation - should start with http:// or https://
-                    return value.startsWith("http://") || value.startsWith("https://");
-                }
-            },
-            dynamicUrl2x: {
-                value: "",
-                validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // Basic URL validation - should start with http:// or https://
-                    return value.startsWith("http://") || value.startsWith("https://");
-                }
-            },
-            dynamicToken2x: {
-                value: "",
-                validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // For token, accept any non-empty string
-                    return value.length > 0;
-                }
-            },
-            dynamicHostname1x: {
-                value: "",
-                validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // For hostname, accept any non-empty string that's not just whitespace
-                    return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
-                }
-            },
-            dynamicPort1x: {
+            dynamicPort: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -329,7 +278,18 @@
                     return !isNaN(port) && port > 0 && port <= 65535;
                 }
             },
-            dynamicDatabase1x: {
+            dynamicUrl: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // Basic URL validation - should start with http:// or https://
+                    return value.startsWith("http://") || value.startsWith("https://");
+                }
+            },
+            dynamicDatabase: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -340,7 +300,7 @@
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
             },
-            dynamicUsername1x: {
+            dynamicUsername: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -351,7 +311,7 @@
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
             },
-            dynamicPassword1x: {
+            dynamicPassword: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -362,7 +322,18 @@
                     return true;
                 }
             },
-            dynamicTimeout2x: {
+            dynamicToken: {
+                value: "",
+                validate: function (value) {
+                    if (!value || value.trim() === "") return true; // Empty is valid
+                    value = value.trim();
+                    // Check if it's an environment variable
+                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    // For token, accept any non-empty string
+                    return value.length > 0;
+                }
+            },
+            dynamicTimeout: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -374,7 +345,7 @@
                     return !isNaN(timeout) && timeout > 0;
                 }
             },
-            dynamicVerifyCertificate2x: {
+            dynamicVerifyCertificate: {
                 value: "",
                 validate: function (value) {
                     if (!value || value.trim() === "") return true; // Empty is valid
@@ -386,6 +357,7 @@
                 }
             },
         },
+        // ------------ LucaT: default values config node (END)
         credentials: {
             username: { type: "text" },
             password: { type: "password" },
@@ -403,7 +375,6 @@
         oneditprepare: function () {
             // ------------ LucaT START
             var self = this;
-
             // Prepara i tab
             var tabs = RED.tabs.create({
                 id: "node-config-influxdb-tabs",
@@ -423,29 +394,19 @@
             setTimeout(function () {
                 tabs.resize()
             }, 0);
-            // ------------ LucaT END
-
-            // ------------ LucaT: Initialize Dynamic Properties values (START)
             // Popola i campi con i valori salvati
             $("#node-config-input-dynamicEnabled").val(this.dynamicEnabled || "");
             $("#node-config-input-dynamicVersion").val(this.dynamicVersion || "");
-            // Sezione 1.x
-            $("#node-config-input-dynamicHostname1x").val(this.dynamicHostname1x || "");
-            $("#node-config-input-dynamicPort1x").val(this.dynamicPort1x || "");
-            $("#node-config-input-dynamicDatabase1x").val(this.dynamicDatabase1x || "");
-            $("#node-config-input-dynamicUsername1x").val(this.dynamicUsername1x || "");
-            $("#node-config-input-dynamicPassword1x").val(this.dynamicPassword1x || "");
-            // Sezione 1.8
-            $("#node-config-input-dynamicUrl18Flux").val(this.dynamicUrl18Flux || "");
-            $("#node-config-input-dynamicUsername18Flux").val(this.dynamicUsername18Flux || "");
-            $("#node-config-input-dynamicPassword18Flux").val(this.dynamicPassword18Flux || "");
-            // Sezione 2.0
-            $("#node-config-input-dynamicUrl2x").val(this.dynamicUrl2x || "");
-            $("#node-config-input-dynamicToken2x").val(this.dynamicToken2x || "");
-            $("#node-config-input-dynamicTimeout2x").val(this.dynamicTimeout2x || "");
-            $("#node-config-input-dynamicVerifyCertificate2x").val(this.dynamicVerifyCertificate2x || "");
-
-            // ------------ LucaT: Initialize Dynamic Properties values (END)
+            $("#node-config-input-dynamicHostname").val(this.dynamicHostname || "");
+            $("#node-config-input-dynamicPort").val(this.dynamicPort || "");
+            $("#node-config-input-dynamicUrl").val(this.dynamicUrl || "");
+            $("#node-config-input-dynamicDatabase").val(this.dynamicDatabase || "");
+            $("#node-config-input-dynamicUsername").val(this.dynamicUsername || "");
+            $("#node-config-input-dynamicPassword").val(this.dynamicPassword || "");
+            $("#node-config-input-dynamicToken").val(this.dynamicToken || "");
+            $("#node-config-input-dynamicTimeout").val(this.dynamicTimeout || "");
+            $("#node-config-input-dynamicVerifyCertificate").val(this.dynamicVerifyCertificate || "");
+            // ------------ LucaT END
 
             function updateTLSOptions() {
                 if ($("#node-config-input-usetls").is(':checked')) {
@@ -621,7 +582,7 @@
             <strong>Dynamic Measurement:</strong> Override the measurement name using environment variables like <code
                 style="background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${IDB_MEASUREMENT_OUT}  (all DB versions)</code>.
         </div>
-        
+
         <!-- Precision dinamica -->
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
         <div class="form-row">
