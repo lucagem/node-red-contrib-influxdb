@@ -680,32 +680,44 @@ module.exports = function (RED) {
                 });
             });
         } else if (version === VERSION_18_FLUX || version === VERSION_20) {
-            // LucaT: Gestione dinamica di bucket e org per supportare override
-            let bucket;
-            let org;
-            if (version === VERSION_18_FLUX) {
-                // Per 1.8-flux, il bucket è sempre database/retention
-                let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
-                bucket = `${node.database}/${retentionPolicy}`;
-                org = '';
-            } else {
-                // Per 2.0, usa i valori (potenzialmente overridden)
-                bucket = node.bucket;
-                org = node.org;
-            }
-            this.client = this.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
+            // LucaT: Contatore delle operazioni di scrittura
+            this.writeCount = 0;
+            // LucaT: Inizializza lo status del nodo basato su dynamicEnabled
+            var connectionEnabled = updateNodeStatus(this, this.influxdbConfig);
 
             node.on("input", function (msg, send, done) {
                 // LucaT: Controlla se la connessione è abilitata
-                if (!node.influxdbConfig.isConnectionEnabled()) {
+                if (!connectionEnabled) {
                     updateNodeStatus(node, node.influxdbConfig);
                     done();
                     return;
                 }
+
+                // LucaT: Gestione dinamica di bucket e org per supportare override
+                // IMPORTANTE: Questa logica deve essere dentro l'input handler per garantire
+                // che gli override dinamici siano già stati applicati
+                let bucket;
+                let org;
+                if (version === VERSION_18_FLUX) {
+                    // Per 1.8-flux, il bucket è sempre database/retention
+                    // Usa i valori potenzialmente overridden
+                    let retentionPolicy = node.retentionPolicyV18Flux ? node.retentionPolicyV18Flux : 'autogen';
+                    bucket = `${node.database}/${retentionPolicy}`;
+                    org = '';
+                    RED.log.debug(`InfluxDB 1.8-flux: Using bucket [${bucket}] with org [${org}]`);
+                } else {
+                    // Per 2.0, usa i valori (potenzialmente overridden)
+                    bucket = node.bucket;
+                    org = node.org;
+                    RED.log.debug(`InfluxDB 2.0: Using bucket [${bucket}] with org [${org}]`);
+                }
+
+                // LucaT: Crea il writeApi ad ogni input con i parametri aggiornati
+                node.client = node.influxdbConfig.client.getWriteApi(org, bucket, node.precisionV18FluxV20);
+
                 writePoints(msg, node, done);
             });
         }
-
         // LucaT: Ascolta le modifiche alla configurazione
         this.on('close', function () {
             node.status({});
