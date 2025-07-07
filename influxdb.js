@@ -960,7 +960,7 @@ module.exports = function (RED) {
 
         // LucaT: Applica gli override se disponibili
         if (dynamicQueryIn !== null) {
-            RED.log.info(`InfluxDb IN dynamic override Query changed from [${this.query}] to [${dynamicQueryIn}]`);
+            RED.log.info(`InfluxDb IN dynamic override Query changed \nfrom [${this.query}] \nto [${dynamicQueryIn}]`);
             this.query = dynamicQueryIn;
         }
         if (dynamicRawOutputIn !== null) {

@@ -27,7 +27,7 @@
                 "IDB_RETENTION_POLICY_OUT": "autogen",
                 "IDB_PRECISION_BATCH": "s",
                 "IDB_RETENTION_POLICY_BATCH": "autogen",
-                "IDB_QUERY_IN": "SELECT * FROM weather_sensor, alarm_sensor WHERE time > now() - 1h ORDER BY time DESC",
+                "IDB_QUERY_IN": "SELECT * FROM mesaurementOut WHERE time > now() - 1m",
                 "IDB_RAW_OUTPUT_IN": "false",
                 "IDB_PRECISION_IN": "s",
                 "IDB_RETENTION_POLICY_IN": "autogen",
@@ -66,7 +66,7 @@
                 "IDB_PRECISION_BATCH": "s",
                 "IDB_RETENTION_POLICY_BATCH": "",
                 "IDB_DATABASE_BATCH": "testdb",
-                "IDB_QUERY_IN": "from(bucket: \"testdb\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"weather_sensor\" or r._measurement == \"alarm_sensor\") |> sort(columns: [\"_time\"], desc: true)",
+                "IDB_QUERY_IN": "from(bucket: \"testdb\") |> range(start: -1m) |> yield()",
                 "IDB_RAW_OUTPUT_IN": "false",
                 "IDB_PRECISION_IN": "s",
                 "IDB_RETENTION_POLICY_IN": "autogen",
@@ -106,11 +106,12 @@
                 "IDB_PRECISION_BATCH": "s",
                 "IDB_ORGANIZATION_BATCH": "my-org",
                 "IDB_BUCKET_BATCH": "testdb",
-                "IDB_QUERY_IN": "from(bucket: \"testdb\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"weather_sensor\" or r._measurement == \"alarm_sensor\") |> sort(columns: [\"_time\"], desc: true)",
+                // Query corrette per test progressivi:
+                "IDB_QUERY_IN": "from(bucket: \"testdb\") |> range(start: -1m) |> yield()",
                 "IDB_RAW_OUTPUT_IN": "false",
                 "IDB_PRECISION_IN": "s",
                 "IDB_RETENTION_POLICY_IN": "autogen",
-                "IDB_ORGANIZATION_IN": "my-org",
+                "IDB_ORGANIZATION_IN": "my-org"
             },
             "skipFiles": [
                 "<node_internals>/**"
