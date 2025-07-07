@@ -16,14 +16,20 @@ module.exports = function (RED) {
         if (!dynamicVersion || dynamicVersion.trim() === "" || isEnvironmentVariable(dynamicVersion)) {
             return null; // Non intervenire
         }
-        const trimmedValue = dynamicVersion.trim();
+        const trimmedValue = dynamicVersion.trim().toLowerCase();
         // Mappa i valori alle versioni corrette
         switch (trimmedValue) {
             case "1":
+            case "1.x":
                 return VERSION_1X;
             case "1.8":
+            case "1.8f":
+            case "1.8flux":
+            case "1.8-flux":
                 return VERSION_18_FLUX;
             case "2":
+            case "2.x":
+            case "2.7":
                 return VERSION_20;
             default:
                 // Se è una variabile di ambiente o valore non riconosciuto, non intervenire
