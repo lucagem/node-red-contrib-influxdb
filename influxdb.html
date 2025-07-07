@@ -1564,8 +1564,8 @@
                     // Check if it's an environment variable
                     if (isEnvironmentVarValid(value)) return true;
                     if (isEnvironmentVarNotValid(value)) return false;
-                    // For query, accept any non-empty string
-                    return value.length > 0;
+                    // For query, accept any non-empty string that doesn't contain invalid environment variable syntax
+                    return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
             },
             dynamicRawOutputIn: {
