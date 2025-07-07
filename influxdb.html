@@ -1,9 +1,9 @@
+<!-- #region Javascript Funzioni e Costanti globali -->
 <script type="text/javascript">
     // LucaT: Funzioni helper globali per validazione variabili di ambiente
     function isEnvironmentVarValid(value) {
         return (value.startsWith("${") && value.endsWith("}"));
     }
-
     function isEnvironmentVarNotValid(value) {
         if (value.startsWith("${") && !value.endsWith("}")) return false;
         if (value.endsWith("}") && !value.startsWith("${")) return false;
@@ -23,8 +23,23 @@
 
         const validValues = allowAll ? VALID_PRECISIONS_ALL : VALID_PRECISIONS_2X;
         return validValues.includes(value);
+    }
+    function validateBoolean(value) {
+        if (!value || value.trim() === "") return true;
+        value = value.trim();
+        if (isEnvironmentVarValid(value)) return true;
+        if (isEnvironmentVarNotValid(value)) return false;
+        return VALID_BOOLEANS.includes(value.toLowerCase());
+    }
+    function validateVersion(value) {
+        if (!value || value.trim() === "") return true;
+        value = value.trim();
+        if (isEnvironmentVarValid(value)) return true;
+        if (isEnvironmentVarNotValid(value)) return false;
+        return VALID_VERSIONS.includes(value);
     }    
 </script>
+<!-- #endregion Javascript Funzioni e Costanti globali -->
 
 <script type="text/html" data-template-name="influxdb">
     <div class="form-row">
@@ -273,25 +288,13 @@
             dynamicEnabled: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid boolean-like value
-                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                    return validateBoolean(value);
                 }
             },
             dynamicVersion: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid version
-                    return ["1", "1.8", "2"].includes(value);
+                    return validateVersion(value);
                 }
             },
             dynamicHostname: {
@@ -395,13 +398,7 @@
             dynamicVerifyCertificate: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid boolean-like value
-                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                    return validateBoolean(value);
                 }
             },
         },
@@ -848,14 +845,7 @@
             dynamicPrecisionOut: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid precision value
-                    const validPrecisions = ['ns', 'us', 'ms', 's', 'n', 'u', 'm', 'h', 'd', 'w'];
-                    return validPrecisions.includes(value);
+                    return validatePrecision(value, true); // allowAll = true per tutte le versioni
                 }
             }
         },
@@ -1197,14 +1187,7 @@
             dynamicPrecisionBatch: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid precision value
-                    const validPrecisions = ['ns', 'us', 'ms', 's', 'n', 'u', 'm', 'h', 'd', 'w'];
-                    return validPrecisions.includes(value);
+                    return validatePrecision(value, true); // allowAll = true per tutte le versioni
                 }
             },
             dynamicRetentionPolicyBatch: {
@@ -1579,7 +1562,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For query, accept any non-empty string
                     return value.length > 0;
                 }
@@ -1587,25 +1571,13 @@
             dynamicRawOutputIn: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
-                    // Check if it's a valid boolean-like value
-                    return ["true", "false", "0", "1"].includes(value.toLowerCase());
+                    return validateBoolean(value);
                 }
             },
             dynamicPrecisionIn: {
                 value: "",
                 validate: function (value) {
-                    if (!value || value.trim() === "") return true; // Empty is valid
-                    value = value.trim();
-                    // Check if it's an environment variable
-                    if (isEnvironmentVarValid(value)) return true;
-                    if (isEnvironmentVarNotValid(value)) return false;
-                    // Check if it's a valid precision value (includendo tutti i valori per 1.x)
-                    const validPrecisions = ['n', 'u', 'ms', 's', 'm', 'h', 'd', 'w', 'ns', 'us'];
-                    return validPrecisions.includes(value);
+                    return validatePrecision(value, true); // allowAll = true per il nodo IN (supporta 1.x)
                 }
             },
             dynamicRetentionPolicyIn: {
@@ -1614,7 +1586,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For retention policy, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
@@ -1625,7 +1598,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For organization, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
