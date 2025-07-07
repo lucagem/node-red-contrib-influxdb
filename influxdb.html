@@ -198,6 +198,15 @@
     function getVersion() {
         return $("#node-config-input-influxdbVersion option:selected").val();
     }
+    function isEnvironmentVarValid(value) {                
+        return  (value.startsWith("${") && value.endsWith("}"));
+    }
+    function isEnvironmentVarNotValid(value) {
+        if (value.startsWith("${") && !value.endsWith("}")) return false;
+        if (value.endsWith("}" && !value.startsWith("${"))) return false;
+        return true;
+    }
+
     RED.nodes.registerType('influxdb', {
         category: 'config',
         color: "rgb(218, 196, 180)",
@@ -239,7 +248,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Check if it's a valid boolean-like value
                     return ["true", "false", "0", "1"].includes(value.toLowerCase());
                 }
@@ -250,7 +260,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Check if it's a valid version
                     return ["1", "1.8", "2"].includes(value);
                 }
@@ -261,7 +272,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For hostname, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
@@ -272,7 +284,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Check if it's a valid port number
                     const port = parseInt(value);
                     return !isNaN(port) && port > 0 && port <= 65535;
@@ -284,7 +297,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Basic URL validation - should start with http:// or https://
                     return value.startsWith("http://") || value.startsWith("https://");
                 }
@@ -295,7 +309,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For database name, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
@@ -306,7 +321,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For username, accept any non-empty string
                     return value.length > 0 && !value.startsWith("$") && !value.includes("}") && !value.includes("{");
                 }
@@ -317,7 +333,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For password, accept any string (can be empty)
                     return true;
                 }
@@ -328,7 +345,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // For token, accept any non-empty string
                     return value.length > 0;
                 }
@@ -339,7 +357,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Check if it's a valid positive number
                     const timeout = parseInt(value);
                     return !isNaN(timeout) && timeout > 0;
@@ -351,7 +370,8 @@
                     if (!value || value.trim() === "") return true; // Empty is valid
                     value = value.trim();
                     // Check if it's an environment variable
-                    if (value.startsWith("${") && value.endsWith("}")) return true;
+                    if (isEnvironmentVarValid(value)) return true;
+                    if (isEnvironmentVarNotValid(value)) return false;
                     // Check if it's a valid boolean-like value
                     return ["true", "false", "0", "1"].includes(value.toLowerCase());
                 }
@@ -688,6 +708,14 @@
         }
         return influxDBVersion;
     }
+    function isEnvironmentVarValid(value) {                
+        return  (value.startsWith("${") && value.endsWith("}"));
+    }
+    function isEnvironmentVarNotValid(value) {
+        if (value.startsWith("${") && !value.endsWith("}")) return false;
+        if (value.endsWith("}" && !value.startsWith("${"))) return false;
+        return true;
+    }
 
     RED.nodes.registerType('influxdb out', {
         category: 'storage-output',
@@ -1013,6 +1041,14 @@
 
 <!-- #region Javascript Nodo BATCH -->
 <script type="text/javascript">
+    function isEnvironmentVarValid(value) {                
+        return  (value.startsWith("${") && value.endsWith("}"));
+    }
+    function isEnvironmentVarNotValid(value) {
+        if (value.startsWith("${") && !value.endsWith("}")) return false;
+        if (value.endsWith("}" && !value.startsWith("${"))) return false;
+        return true;
+    }    
     RED.nodes.registerType('influxdb batch', {
         category: 'storage-output',
         color: "rgb(218, 196, 180)",
