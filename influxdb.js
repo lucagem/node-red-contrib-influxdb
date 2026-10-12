@@ -290,10 +290,19 @@ module.exports = function (RED) {
                 RED.log.info(`InfluxDb dynamic override Token changed (hidden for security)`);
                 // Il token verrà gestito nella sezione credentials più avanti
             }
+        }
+        // LucaT: Timeout e verifica certificato valgono per 1.8-flux e 2.0 (client @influxdata/influxdb-client).
+        // Prima il timeout era applicato solo alla 2.0 e la verifica certificato non era applicata mai.
+        if (n.influxdbVersion === VERSION_18_FLUX || n.influxdbVersion === VERSION_20) {
             // Override Timeout
             if (dynamicTimeoutOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override Timeout changed from [${n.timeout}] to [${dynamicTimeoutOverride}]`);
                 n.timeout = dynamicTimeoutOverride;
+            }
+            // Override Verify Server Certificate (rejectUnauthorized)
+            if (dynamicVerifyCertificateOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override VerifyCertificate changed from [${n.rejectUnauthorized}] to [${dynamicVerifyCertificateOverride}]`);
+                n.rejectUnauthorized = dynamicVerifyCertificateOverride;
             }
         }
         // LucaT: Gestione version override (FINE)
