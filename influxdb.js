@@ -198,6 +198,18 @@ module.exports = function (RED) {
     }
 
     /**
+     * LucaT - 1.8-flux: database del nodo config (IDB_DATABASE) usato dai nodi out/batch che non hanno
+     * un override proprio. Priorita': override del nodo > IDB_DATABASE del config > valore scritto nel nodo
+     */
+    function applyConfigDatabaseV18Flux(node, label) {
+        const cfg = node.influxdbConfig;
+        if (cfg && cfg.influxdbVersion === VERSION_18_FLUX && cfg.databaseOverrideV18Flux) {
+            RED.log.info(`InfluxDb ${label} Database (1.8-flux) from config node changed from [${node.database}] to [${cfg.databaseOverrideV18Flux}]`);
+            node.database = cfg.databaseOverrideV18Flux;
+        }
+    }
+
+    /**
      * Config node. Currently we only connect to one host.
      */
     function InfluxConfigNode(n) {
@@ -267,6 +279,13 @@ module.exports = function (RED) {
             if (dynamicUrlOverride !== null) {
                 RED.log.info(`InfluxDb dynamic override URL (1.8-flux) changed from [${n.url}] to [${dynamicUrlOverride}]`);
                 n.url = dynamicUrlOverride;
+            }
+            // Override Database per 1.8-flux: il bucket dei nodi out/batch e' "<database>/<retention>".
+            // Lo usano quei nodi se non hanno un override proprio (IDB_DATABASE_OUT / IDB_DATABASE_BATCH)
+            if (dynamicDatabaseOverride !== null) {
+                RED.log.info(`InfluxDb dynamic override Database (1.8-flux) changed from [${this.database}] to [${dynamicDatabaseOverride}]`);
+                this.database = dynamicDatabaseOverride;
+                this.databaseOverrideV18Flux = dynamicDatabaseOverride;
             }
             // Override Username per 1.8-flux
             if (dynamicUsernameOverride !== null) {
@@ -542,6 +561,8 @@ module.exports = function (RED) {
         if (dynamicDatabaseOut !== null) {
             RED.log.info(`InfluxDb OUT dynamic override Database changed from [${this.database}] to [${dynamicDatabaseOut}]`);
             this.database = dynamicDatabaseOut;
+        } else {
+            applyConfigDatabaseV18Flux(this, 'OUT');
         }
         if (dynamicRetentionPolicyOut !== null) {
             // Per 1.x usa retentionPolicy, per 1.8-flux usa retentionPolicyV18Flux
@@ -784,6 +805,8 @@ module.exports = function (RED) {
         if (dynamicDatabaseBatch !== null) {
             RED.log.info(`InfluxDb BATCH dynamic override Database changed from [${this.database}] to [${dynamicDatabaseBatch}]`);
             this.database = dynamicDatabaseBatch;
+        } else {
+            applyConfigDatabaseV18Flux(this, 'BATCH');
         }
         if (dynamicOrgBatch !== null) {
             RED.log.info(`InfluxDb BATCH dynamic override Organization changed from [${this.org}] to [${dynamicOrgBatch}]`);
